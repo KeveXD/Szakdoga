@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:buxa/view/register_page.dart';
 import 'package:buxa/view/menu_page.dart';
-import 'package:buxa/viewmodel/login_viewmodel.dart'; // Az importált ViewModel
+import 'package:buxa/viewmodel/login_viewmodel.dart';
 
 class LoginPage extends StatelessWidget {
-  final LoginViewModel _viewModel = LoginViewModel(); // ViewModel példány
+  final LoginViewModel _viewModel = LoginViewModel();
 
   LoginPage({Key? key});
 

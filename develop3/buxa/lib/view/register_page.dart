@@ -1,32 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:buxa/view/login_page.dart';
+import 'package:buxa/viewmodel/register_viewmodel.dart';
 
-// Register felület
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key});
+  final RegisterViewModel _viewModel = RegisterViewModel();
+
+  RegisterPage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
-
-    Future<void> _registerWithEmailAndPassword() async {
-      try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text,
-          password: passwordController.text,
-        );
-        // Sikeres regisztráció
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      } catch (e) {
-        // Hibakezelés
-        print("Hiba a regisztráció során: $e");
-      }
-    }
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +53,7 @@ class RegisterPage extends StatelessWidget {
                   hintText: 'password',
                   filled: true,
                   fillColor: const Color(0xFFB9F3EC),
-                  contentPadding: const EdgeInsets.all(12),
+                  //contentPadding: const EdgeInsets all(12),
                   border: OutlineInputBorder(
                     borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10),
@@ -79,7 +64,11 @@ class RegisterPage extends StatelessWidget {
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () {
-                  _registerWithEmailAndPassword();
+                  _viewModel.registerWithEmailAndPassword(
+                    emailController.text,
+                    passwordController.text,
+                    context,
+                  );
                 },
                 child: const Text('Regisztráció'),
               ),
