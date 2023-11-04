@@ -2,7 +2,6 @@ import 'package:buxa/widgets/new_debt_dialog.dart';
 import 'package:buxa/widgets/debt_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
-import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/widgets/contact_card.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';

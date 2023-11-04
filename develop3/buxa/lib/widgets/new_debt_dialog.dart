@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/model/new_debt_dialog_services.dart';
+import 'package:buxa/viewmodel/new_debt_dialog_viewmodel.dart';
 
 class NewDebtDialog extends StatefulWidget {
   final VoidCallback onAddNewElement;
@@ -12,7 +12,7 @@ class NewDebtDialog extends StatefulWidget {
 }
 
 class _NewDebtDialogState extends State<NewDebtDialog> {
-  final NewDebtDialogService viewModel = NewDebtDialogService();
+  final NewDebtDialogViewModel viewModel = NewDebtDialogViewModel();
   final VoidCallback onAddNewElement;
   final TextEditingController nameController = TextEditingController();
   final TextEditingController debtorNameController = TextEditingController();
