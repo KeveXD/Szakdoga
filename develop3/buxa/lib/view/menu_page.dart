@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:buxa/view/debt_page.dart';
 import 'package:buxa/view/pocket_page.dart';
 import 'package:buxa/view/query_page.dart';
+import 'package:buxa/viewmodel/menu_viewmodel.dart';
 
 class MenuPage extends StatelessWidget {
+  final MenuPageViewModel? viewModel = MenuPageViewModel();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,9 +55,7 @@ class MenuPage extends StatelessWidget {
                         icon: Icons.query_builder,
                         label: 'Lekérdezések',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => QueryPage(),
-                          ));
+                          viewModel?.navigateToQueryPage(context);
                         },
                       ),
                     ),
@@ -68,22 +69,19 @@ class MenuPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CardWidget(
-                          icon: Icons.attach_money,
-                          label: 'Tartozások',
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => DebtPage(),
-                            ));
-                          }),
+                        icon: Icons.attach_money,
+                        label: 'Tartozások',
+                        onTap: () {
+                          viewModel?.navigateToDebtPage(context);
+                        },
+                      ),
                     ),
                     Expanded(
                       child: CardWidget(
                         icon: Icons.shopping_cart,
                         label: 'Pénz áram',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => PocketPage(),
-                          ));
+                          viewModel?.navigateToPocketPage(context);
                         },
                       ),
                     ),
@@ -99,12 +97,18 @@ class MenuPage extends StatelessWidget {
                       child: CardWidget(
                         icon: Icons.cloud_upload,
                         label: 'Feltöltés',
+                        onTap: () {
+                          viewModel?.download(context);
+                        },
                       ),
                     ),
                     Expanded(
                       child: CardWidget(
                         icon: Icons.cloud_download,
                         label: 'Letöltés',
+                        onTap: () {
+                          viewModel?.navigateToPocketPage(context);
+                        },
                       ),
                     ),
                   ],
