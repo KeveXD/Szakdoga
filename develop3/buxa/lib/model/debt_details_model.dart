@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
 import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/database/person_repository.dart';
@@ -10,8 +11,12 @@ class DebtDetailsModel {
   }
 
   Future<void> loadFromDatabase() async {
-    final debtDbHelper = DebtRepository();
-    allDebts = await debtDbHelper.getDebtList();
+    if (kIsWeb) {
+    } else {
+      // Mobil platformon használjuk a DebtRepository-t
+      final debtDbHelper = DebtRepository();
+      allDebts = await debtDbHelper.getDebtList();
+    }
   }
 
   Future<List<DebtDataModel>> calculateDebts() async {
