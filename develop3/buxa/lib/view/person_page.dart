@@ -82,9 +82,7 @@ class _PersonPageState extends State<PersonPage> {
                 color: Color.fromARGB(255, 158, 202, 62),
                 icon: Icons.menu,
                 title: 'Menü',
-                function: () {
-                  // Ezt ide helyezd el, hogy mit csinál az Üzenet gomb.
-                },
+                function: () {},
               ),
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
@@ -96,7 +94,7 @@ class _PersonPageState extends State<PersonPage> {
                     builder: (BuildContext context) {
                       return NewPersonDialog(
                         onAddNewPerson: () {
-                          viewModel.refreshPeople(); // Adatok újratöltése
+                          viewModel.refreshPeople();
                           Navigator.of(context).pop();
                         },
                       );

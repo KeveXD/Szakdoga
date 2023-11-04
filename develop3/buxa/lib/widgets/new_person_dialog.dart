@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/database/person_repository.dart';
-import 'package:buxa/data_model/person_data_model.dart';
-import 'package:buxa/widgets/error_dialog.dart';
+import 'package:buxa/viewmodel/new_person_viewmodel.dart';
 
 class NewPersonDialog extends StatefulWidget {
   final VoidCallback onAddNewPerson;
@@ -14,21 +12,17 @@ class NewPersonDialog extends StatefulWidget {
 }
 
 class _NewPersonDialogState extends State<NewPersonDialog> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  bool _hasRevolut = false;
-  final VoidCallback onAddNewPerson;
+  final NewPersonViewModel viewModel;
 
-  _NewPersonDialogState({required this.onAddNewPerson});
+  _NewPersonDialogState({required VoidCallback onAddNewPerson})
+      : viewModel = NewPersonViewModel(onAddNewPerson: onAddNewPerson);
 
   @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () {
-      _showNewPersonDialog();
-    });
+  Widget build(BuildContext context) {
+    return Container();
   }
 
+  // Define _showNewPersonDialog here
   void _showNewPersonDialog() {
     showDialog(
       context: context,
@@ -39,21 +33,21 @@ class _NewPersonDialogState extends State<NewPersonDialog> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextField(
-                controller: nameController,
+                controller: viewModel.nameController,
                 decoration: InputDecoration(labelText: 'Név'),
               ),
               TextField(
-                controller: emailController,
+                controller: viewModel.emailController,
                 decoration: InputDecoration(labelText: 'Email'),
               ),
               Row(
                 children: [
                   Text('Van Revolutja?'),
                   Switch(
-                    value: _hasRevolut,
+                    value: viewModel.hasRevolut,
                     onChanged: (value) {
                       setState(() {
-                        _hasRevolut = value;
+                        viewModel.hasRevolut = value;
                       });
                     },
                   ),
@@ -71,23 +65,8 @@ class _NewPersonDialogState extends State<NewPersonDialog> {
             ElevatedButton(
               child: Text('Hozzáad'),
               onPressed: () async {
-                if (nameController.text.isEmpty) {
-                  ErrorDialog.show(context, 'A nevet kötelező megadni');
-                } else {
-                  final newPerson = PersonDataModel(
-                    name: nameController.text,
-                    email: emailController.text,
-                    hasRevolut: _hasRevolut,
-                  );
-
-                  final dbHelper = PersonRepository();
-                  final id = await dbHelper.insertPerson(newPerson);
-                  newPerson.id = id;
-
-                  onAddNewPerson();
-
-                  Navigator.of(context).pop();
-                }
+                viewModel.addNewPerson(context);
+                widget.onAddNewPerson();
               },
             ),
           ],
@@ -97,7 +76,10 @@ class _NewPersonDialogState extends State<NewPersonDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container();
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      _showNewPersonDialog();
+    });
   }
 }
