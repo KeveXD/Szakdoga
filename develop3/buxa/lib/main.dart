@@ -15,10 +15,10 @@ Future<void> main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
         options: FirebaseOptions(
-            apiKey: "AIzaSyBB-DTWNja2Os08mO3DsWEMFetfYF9-ggY",
-            projectId: "buxaflutter-58aca",
-            messagingSenderId: "721978480828",
-            appId: "1:721978480828:web:8e42aa67c15afa076658b9"));
+            apiKey: "AIzaSyB17CUSJ77X1Xc-8Ph7Yoci9ivmC9IO5fE",
+            projectId: "buxaflutter2",
+            messagingSenderId: "875595350767",
+            appId: "1:875595350767:web:6bc86c822c1625a209d11a"));
   }
   //androidhoz is kell egy hasonló
   await Firebase.initializeApp();
