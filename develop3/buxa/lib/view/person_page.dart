@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/database/person_repository.dart';
-import 'package:buxa/data_model/person_data_model.dart';
+import 'package:buxa/viewmodel/person_viewmodel.dart';
 import 'package:buxa/widgets/person_list_item.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/widgets/new_person_dialog.dart';
+import 'package:buxa/data_model/person_data_model.dart';
 
 class PersonPage extends StatefulWidget {
   @override
@@ -12,18 +12,12 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
-  late Future<List<PersonDataModel>> _peopleFuture;
+  final PersonPageViewModel viewModel = PersonPageViewModel();
 
   @override
   void initState() {
     super.initState();
-    _peopleFuture = PersonRepository().getPersonList();
-  }
-
-  void _refreshPeople() {
-    setState(() {
-      _peopleFuture = PersonRepository().getPersonList();
-    });
+    viewModel.loadPeople();
   }
 
   @override
@@ -50,7 +44,7 @@ class _PersonPageState extends State<PersonPage> {
           ),
           Expanded(
             child: FutureBuilder<List<PersonDataModel>>(
-              future: PersonRepository().getPersonList(),
+              future: viewModel.peopleFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -70,7 +64,7 @@ class _PersonPageState extends State<PersonPage> {
                       return PersonListItem(
                         person: person,
                         onDelete: () {
-                          _refreshPeople();
+                          viewModel.refreshPeople(); // Adatok újratöltése
                         },
                         onEdit: () {
                           // Handle edit action here
@@ -102,7 +96,7 @@ class _PersonPageState extends State<PersonPage> {
                     builder: (BuildContext context) {
                       return NewPersonDialog(
                         onAddNewPerson: () {
-                          _refreshPeople();
+                          viewModel.refreshPeople(); // Adatok újratöltése
                           Navigator.of(context).pop();
                         },
                       );
