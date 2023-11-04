@@ -12,12 +12,19 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
+  late Future<List<PersonDataModel>> _personFuture;
   final PersonPageViewModel viewModel = PersonPageViewModel();
 
   @override
   void initState() {
     super.initState();
     viewModel.loadPeople();
+  }
+
+  void _refreshPeople() {
+    setState(() {
+      _personFuture = viewModel.peopleFuture;
+    });
   }
 
   @override
@@ -64,7 +71,7 @@ class _PersonPageState extends State<PersonPage> {
                       return PersonListItem(
                         person: person,
                         onDelete: () {
-                          viewModel.refreshPeople(); // Adatok újratöltése
+                          _refreshPeople();
                         },
                         onEdit: () {
                           // Handle edit action here

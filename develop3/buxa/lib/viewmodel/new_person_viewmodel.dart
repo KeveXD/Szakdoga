@@ -20,7 +20,7 @@ class NewPersonViewModel {
 
     if (result != null) {
       onAddNewPerson();
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
     }
   }
 }

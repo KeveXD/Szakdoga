@@ -98,7 +98,7 @@ class MenuPage extends StatelessWidget {
                         icon: Icons.cloud_upload,
                         label: 'Feltöltés',
                         onTap: () {
-                          viewModel?.download(context);
+                          viewModel?.upload(context);
                         },
                       ),
                     ),
@@ -107,7 +107,7 @@ class MenuPage extends StatelessWidget {
                         icon: Icons.cloud_download,
                         label: 'Letöltés',
                         onTap: () {
-                          viewModel?.navigateToPocketPage(context);
+                          viewModel?.download(context);
                         },
                       ),
                     ),

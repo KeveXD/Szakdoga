@@ -3,6 +3,7 @@ import 'package:buxa/data_model/person_data_model.dart';
 import 'package:buxa/model/new_debt_dialog_model.dart';
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
+import 'package:buxa/widgets/error_dialog.dart';
 
 class NewDebtDialogViewModel {
   final NewDebtDialogModel model = NewDebtDialogModel();
@@ -25,8 +26,17 @@ class NewDebtDialogViewModel {
         .toList();
   }
 
-  Future<void> addNewDebt(BuildContext context, VoidCallback onAddNewElement,
-      String name, String debtorName) async {
+  Future<void> addNewDebt(
+    BuildContext context,
+    VoidCallback onAddNewElement,
+    String name,
+    String debtorName,
+  ) async {
+    if (name.isEmpty || debtorName.isEmpty || amountController.text.isEmpty) {
+      ErrorDialog.show(context, 'Az összes mező kitöltése kötelező.');
+      return;
+    }
+
     final personToId = await model.insertPersonIfNeeded(name);
     final debtorPersonId = await model.insertPersonIfNeeded(debtorName);
 
