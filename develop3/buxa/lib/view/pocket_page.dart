@@ -4,6 +4,8 @@ import 'package:buxa/widgets/new_pocket_dialog.dart';
 import 'package:buxa/viewmodel/pocket_viewmodel.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
+//fokusz nem jo
+
 class PocketPage extends StatefulWidget {
   @override
   _PocketPageState createState() => _PocketPageState();
@@ -12,6 +14,7 @@ class PocketPage extends StatefulWidget {
 class _PocketPageState extends State<PocketPage> {
   late Future<List<PocketDataModel>> _pocketsFuture;
   final PocketPageViewModel _viewModel;
+  final FocusNode _scaffoldFocus = FocusNode();
 
   _PocketPageState() : _viewModel = PocketPageViewModel();
 
@@ -25,7 +28,7 @@ class _PocketPageState extends State<PocketPage> {
   void _refreshPockets() async {
     await _viewModel.loadPockets();
     setState(() {
-      // Frissítsd a képernyőt a setState hívás után
+      _scaffoldFocus.requestFocus();
     });
   }
 
@@ -36,20 +39,23 @@ class _PocketPageState extends State<PocketPage> {
         title: Text('Zsebek'),
         centerTitle: true,
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+      body: Focus(
+        focusNode: _scaffoldFocus,
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          itemCount: _viewModel.pockets.length,
+          itemBuilder: (context, index) {
+            return PocketListItem(
+              pocket: _viewModel.pockets[index],
+              onDelete: () {
+                _viewModel.deletePocket(_viewModel.pockets[index]);
+                _refreshPockets();
+              },
+            );
+          },
         ),
-        itemCount: _viewModel.pockets.length,
-        itemBuilder: (context, index) {
-          return PocketListItem(
-            pocket: _viewModel.pockets[index],
-            onDelete: () {
-              _viewModel.deletePocket(_viewModel.pockets[index]);
-              _refreshPockets();
-            },
-          );
-        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -60,6 +66,7 @@ class _PocketPageState extends State<PocketPage> {
                 onAddNewPocket: () {
                   _viewModel.loadPockets();
                   _refreshPockets();
+                  _scaffoldFocus.requestFocus();
                 },
               );
             },
