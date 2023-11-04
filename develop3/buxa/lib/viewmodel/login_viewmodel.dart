@@ -2,6 +2,7 @@ import 'package:flutter/material.dart'; // Hozzáadva a BuildContext és a Navig
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:buxa/model/login_model.dart';
 import 'package:buxa/view/menu_page.dart';
+import 'package:buxa/widgets/error_dialog.dart';
 
 class LoginViewModel {
   final LoginModel _model = LoginModel();
@@ -16,23 +17,8 @@ class LoginViewModel {
           context, MaterialPageRoute(builder: (context) => MenuPage()));
     } else {
       // Sikertelen bejelentkezés
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Hiba'),
-            content: Text('Hibás email vagy jelszó.'),
-            actions: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+
+      ErrorDialog.show(context, 'Hibás email vagy jelszó.');
     }
   }
 }
