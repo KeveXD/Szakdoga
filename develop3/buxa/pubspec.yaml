@@ -1,0 +1,42 @@
+name: buxa
+description: A new Flutter project.
+#publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  #uj
+  firebase_core:
+  firebase_auth: ^4.5.0
+  #sqlite 
+  intl: ^0.17.0
+  sqflite: ^2.0.0
+   # Dizájn
+  #flutter_staggered_grid_view: ^0.4.0
+  #intl: ^0.17.0
+  cloud_firestore: ^4.12.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+     
+
+
+   
+
+  
+  flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - assets/kezdo.png
+    - assets/profil.png
+    - assets/pocket.png
+    - assets/revolut.png
+  uses-material-design: true
