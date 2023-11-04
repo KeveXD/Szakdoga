@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/pocket_list_item.dart';
 import 'package:buxa/widgets/new_pocket_dialog.dart';
-import 'package:buxa/database/pocket_repository.dart';
+import 'package:buxa/viewmodel/pocket_viewmodel.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
 class PocketPage extends StatefulWidget {
@@ -10,22 +10,22 @@ class PocketPage extends StatefulWidget {
 }
 
 class _PocketPageState extends State<PocketPage> {
-  // List to hold the pockets
-  List<PocketDataModel> pockets = [];
+  late Future<List<PocketDataModel>> _pocketsFuture;
+  final PocketPageViewModel _viewModel;
+
+  _PocketPageState() : _viewModel = PocketPageViewModel();
 
   @override
   void initState() {
     super.initState();
-    // Load pockets initially
-    loadPockets();
+    _pocketsFuture = _viewModel.loadPockets();
+    _refreshPockets();
   }
 
-  Future<void> loadPockets() async {
-    final pocketRepo = PocketRepository();
-    final pocketList = await pocketRepo.getPocketList();
+  void _refreshPockets() async {
+    await _viewModel.loadPockets();
     setState(() {
-      pockets = pocketList;
-      pockets.add(PocketDataModel(name: 'Összes', special: true));
+      // Frissítsd a képernyőt a setState hívás után
     });
   }
 
@@ -40,12 +40,13 @@ class _PocketPageState extends State<PocketPage> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
-        itemCount: pockets.length,
+        itemCount: _viewModel.pockets.length,
         itemBuilder: (context, index) {
           return PocketListItem(
-            pocket: pockets[index],
+            pocket: _viewModel.pockets[index],
             onDelete: () {
-              deletePocket(pockets[index]);
+              _viewModel.deletePocket(_viewModel.pockets[index]);
+              _refreshPockets();
             },
           );
         },
@@ -57,7 +58,8 @@ class _PocketPageState extends State<PocketPage> {
             builder: (BuildContext context) {
               return NewPocketDialog(
                 onAddNewPocket: () {
-                  loadPockets();
+                  _viewModel.loadPockets();
+                  _refreshPockets();
                 },
               );
             },
@@ -66,12 +68,6 @@ class _PocketPageState extends State<PocketPage> {
         child: Icon(Icons.add),
       ),
     );
-  }
-
-  Future<void> deletePocket(PocketDataModel pocket) async {
-    final pocketRepo = PocketRepository();
-    await pocketRepo.deletePocket(pocket.id!);
-    loadPockets();
   }
 }
 
