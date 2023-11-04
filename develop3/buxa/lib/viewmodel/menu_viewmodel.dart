@@ -7,6 +7,7 @@ import 'package:buxa/view/pocket_page.dart';
 import 'package:buxa/view/query_page.dart';
 import 'package:buxa/widgets/error_dialog.dart';
 import 'package:buxa/database/person_repository.dart';
+import 'package:buxa/data_model/person_data_model.dart';
 
 class MenuPageViewModel {
   MenuPageViewModel();
@@ -124,18 +125,25 @@ class MenuPageViewModel {
             .doc('userData')
             .collection('People');
 
+        // Töröld a lokális adatbázist összes Person rekorddal
+        final personRepo = PersonRepository();
+        final localPeople = await personRepo.getPersonList();
+        for (final person in localPeople) {
+          await personRepo.deletePerson(person.id!);
+        }
+
         // Az összes dokumentum lekérése a "People" kollekcióból
         QuerySnapshot peopleCollection = await peopleCollectionRef.get();
 
-        // Itt tudod feldolgozni az összes dokumentumot
+        // Itt tudod feldolgozni az összes dokumentumot és menteni a helyi adatbázisba
         for (QueryDocumentSnapshot personSnapshot in peopleCollection.docs) {
           // Példa: a dokumentum adatainak lekérése
           Map<String, dynamic> personData =
               personSnapshot.data() as Map<String, dynamic>;
 
-          // Itt történik a feldolgozás vagy mentés
-          // Példa: a lekért adatok kiírása a konzolra
-          print(personData);
+          // Példa: a dokumentumok létrehozása a helyi adatbázisban
+          final person = PersonDataModel.fromMap(personData);
+          await personRepo.insertPerson(person);
         }
       }
     } catch (error) {
