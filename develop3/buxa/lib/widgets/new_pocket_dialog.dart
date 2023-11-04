@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/data_model/pocket_data_model.dart';
-import 'package:buxa/widgets/error_dialog.dart';
+import 'package:buxa/viewmodel/new_pocket_viewmodel.dart';
 
 class NewPocketDialog extends StatefulWidget {
   final VoidCallback onAddNewPocket;
@@ -16,6 +14,7 @@ class NewPocketDialog extends StatefulWidget {
 class _NewPocketDialogState extends State<NewPocketDialog> {
   final TextEditingController nameController = TextEditingController();
   final VoidCallback onAddNewPocket;
+  late final NewPocketViewModel viewModel;
 
   _NewPocketDialogState({required this.onAddNewPocket});
 
@@ -23,14 +22,17 @@ class _NewPocketDialogState extends State<NewPocketDialog> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      _showNewPocketDialog();
+      _showNewPocketDialog(context); // Pass the context here
     });
   }
 
-  void _showNewPocketDialog() {
+  void _showNewPocketDialog(BuildContext context) {
+    // Receive the context here
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        viewModel = NewPocketViewModel(
+            context: context); // Create the viewModel with context
         return AlertDialog(
           title: Text('Új Zseb hozzáadása'),
           content: Column(
@@ -52,19 +54,9 @@ class _NewPocketDialogState extends State<NewPocketDialog> {
             ElevatedButton(
               child: Text('Hozzáad'),
               onPressed: () async {
-                if (nameController.text.isEmpty) {
-                  ErrorDialog.show(context, 'A nevet kötelező megadni');
-                } else {
-                  final newPocket = PocketDataModel(name: nameController.text);
-
-                  final dbHelper = PocketRepository();
-                  final id = await dbHelper.insertPocket(newPocket);
-                  newPocket.id = id;
-
-                  onAddNewPocket();
-
-                  Navigator.of(context).pop();
-                }
+                viewModel.addNewPocket(nameController.text,
+                    onAddNewPocket); // Pass context to the viewModel
+                Navigator.of(context).pop();
               },
             ),
           ],
