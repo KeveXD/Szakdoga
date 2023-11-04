@@ -6,8 +6,8 @@ import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/widgets/contact_card.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
-import 'package:buxa/pages/person_page.dart';
-import 'package:buxa/pages/debt_details_page.dart';
+import 'package:buxa/view/person_page.dart';
+import 'package:buxa/view/debt_details_page.dart';
 
 class DebtPage extends StatefulWidget {
   @override

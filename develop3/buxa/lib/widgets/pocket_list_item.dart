@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/pages/payment_page.dart';
+import 'package:buxa/view/payment_page.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
 class PocketListItem extends StatelessWidget {

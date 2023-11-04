@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/services/query_service.dart';
+import 'package:buxa/model/query_service.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
-import 'package:buxa/pages/query_details_page.dart';
+import 'package:buxa/view/query_details_page.dart';
 
 class QueryPage extends StatefulWidget {
   @override

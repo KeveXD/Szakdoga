@@ -5,7 +5,7 @@ import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/database/pocket_repository.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
-import 'package:buxa/services/new_payment_dialog_service.dart';
+import 'package:buxa/model/new_payment_dialog_service.dart';
 
 class NewPaymentDialog extends StatefulWidget {
   final Function() onAddNewPayment;

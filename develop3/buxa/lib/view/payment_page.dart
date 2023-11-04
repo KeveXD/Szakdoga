@@ -5,7 +5,7 @@ import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
-import 'package:buxa/pages/payment_details_page.dart';
+import 'package:buxa/view/payment_details_page.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
 class PaymentPage extends StatefulWidget {

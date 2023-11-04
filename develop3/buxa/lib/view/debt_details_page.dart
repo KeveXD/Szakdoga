@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/debt_list_item.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
-import 'package:buxa/view_models/debt_details_view_model.dart'; // Importáltuk a ViewModel osztályt
+import 'package:buxa/viewmodel/debt_details_view_model.dart'; // Importáltuk a ViewModel osztályt
 
 class DebtDetailsPage extends StatefulWidget {
   @override

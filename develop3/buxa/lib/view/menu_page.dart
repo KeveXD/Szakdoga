@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/pages/debt_page.dart';
-import 'package:buxa/pages/pocket_page.dart';
-import 'package:buxa/pages/query_page.dart';
+import 'package:buxa/view/debt_page.dart';
+import 'package:buxa/view/pocket_page.dart';
+import 'package:buxa/view/query_page.dart';
 
 class MenuPage extends StatelessWidget {
   @override

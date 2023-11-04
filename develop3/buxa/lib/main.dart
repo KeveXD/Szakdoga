@@ -1,4 +1,4 @@
-import 'package:buxa/pages/login_page.dart';
+import 'package:buxa/view/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +38,7 @@ class Login extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Color.fromARGB(255, 239, 238, 222),
       ),
-      home: const LoginPage(),
+      home: LoginPage(),
     );
   }
 }

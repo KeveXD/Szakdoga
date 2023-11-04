@@ -1,4 +1,4 @@
-import 'package:buxa/services/query_service.dart';
+import 'package:buxa/model/query_service.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/payment_list_item.dart';
 import 'package:buxa/data_model/payment_data_model.dart';

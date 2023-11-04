@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/services/new_debt_dialog_services.dart';
+import 'package:buxa/model/new_debt_dialog_services.dart';
 
 class NewDebtDialog extends StatefulWidget {
   final VoidCallback onAddNewElement;
