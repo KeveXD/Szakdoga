@@ -7,6 +7,10 @@ import 'package:buxa/widgets/error_dialog.dart';
 class LoginViewModel {
   final LoginModel _model = LoginModel();
 
+  String? getUserEmail() {
+    return _model.getUserEmail();
+  }
+
   Future<void> loginFirebase(
       String email, String password, BuildContext context) async {
     final user = await _model.loginFirebase(email, password);

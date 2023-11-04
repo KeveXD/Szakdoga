@@ -70,10 +70,22 @@ class DebtRepository {
     return debts;
   }
 
-  Future<int> deleteDebt(int id) async {
-    final db = await this.database;
-    final result =
-        await db.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
-    return result;
+  Future<void> deleteDebt(DebtDataModel debt) async {
+    final db = await database;
+    await db.delete(
+      tableName,
+      where: '$columnId = ?',
+      whereArgs: [debt.id],
+    );
+  }
+
+  Future<void> updateDebt(DebtDataModel debt) async {
+    final db = await database;
+    await db.update(
+      tableName,
+      debt.toMap(),
+      where: '$columnId = ?',
+      whereArgs: [debt.id],
+    );
   }
 }

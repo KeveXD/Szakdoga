@@ -134,7 +134,7 @@ class CardWidget extends StatelessWidget {
     return Card(
       color: Colors.blue,
       child: InkWell(
-        onTap: onTap, // Itt használjuk az onTap callbacket
+        onTap: onTap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginModel {
-  //firebase authentikáció
+  // Firebase authentikáció
   Future<User?> loginFirebase(String email, String password) async {
     try {
       final UserCredential userCredential =
@@ -14,5 +14,10 @@ class LoginModel {
       print('Hiba a bejelentkezés során: $e');
       return null;
     }
+  }
+
+  String? getUserEmail() {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.email;
   }
 }

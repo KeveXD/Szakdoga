@@ -101,10 +101,9 @@ class DebtListItem extends StatelessWidget {
                       onPressed: () async {
                         final dbHelper = DebtRepository();
 
-                        final result = await dbHelper.deleteDebt(debt.id ?? -1);
-                        if (result > 0) {
-                          onDelete();
-                        }
+                        final result = await dbHelper.deleteDebt(debt);
+
+                        onDelete();
                       },
                       icon: Icon(Icons.delete),
                     ),

@@ -8,25 +8,26 @@ import 'package:buxa/widgets/contact_card.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
 import 'package:buxa/view/person_page.dart';
 import 'package:buxa/view/debt_details_page.dart';
+import 'package:buxa/viewmodel/debt_viewmodel.dart';
 
 class DebtPage extends StatefulWidget {
   @override
   _DebtPageState createState() => _DebtPageState();
 }
 
-//a State azért kell h lehessen frissiteni
 class _DebtPageState extends State<DebtPage> {
   late Future<List<DebtDataModel>> _debtsFuture;
+  final DebtViewModel _viewModel = DebtViewModel();
 
   @override
   void initState() {
     super.initState();
-    _debtsFuture = DebtRepository().getDebtList();
+    _debtsFuture = _viewModel.getDebtList();
   }
 
   void _refreshDebts() {
     setState(() {
-      _debtsFuture = DebtRepository().getDebtList();
+      _debtsFuture = _viewModel.getDebtList();
     });
   }
 
@@ -42,10 +43,11 @@ class _DebtPageState extends State<DebtPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           ContactCard(
-              name: "Keve",
-              email: "keve.balla@gmail.com",
-              hasDebt: true,
-              imagePath: 'assets/profil.png'),
+            name: "Keve",
+            email: _viewModel.getUserEmail() ?? "keve.balla@gmail.com",
+            hasDebt: true,
+            imagePath: 'assets/profil.png',
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -59,7 +61,7 @@ class _DebtPageState extends State<DebtPage> {
           ),
           Expanded(
             child: FutureBuilder<List<DebtDataModel>>(
-              future: DebtRepository().getDebtList(),
+              future: _viewModel.getDebtList(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
