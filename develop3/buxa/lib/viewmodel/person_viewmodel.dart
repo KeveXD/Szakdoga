@@ -12,15 +12,15 @@ class PersonPageViewModel {
 
   late Future<List<PersonDataModel>> peopleFuture;
 
-  PersonPageViewModel() {
-    peopleFuture = _model.loadPeople();
+  PersonPageViewModel(BuildContext context) {
+    peopleFuture = _model.loadPeople(context);
   }
 
-  Future<void> refreshPeople() async {
-    await _model.refreshPeople();
+  Future<void> refreshPeople(BuildContext context) async {
+    await _model.refreshPeople(context);
   }
 
-  Future<void> loadPeople() async {
-    peopleFuture = _model.loadPeople();
+  Future<void> loadPeople(BuildContext context) async {
+    peopleFuture = _model.loadPeople(context);
   }
 }

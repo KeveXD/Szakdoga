@@ -1,14 +1,15 @@
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:buxa/widgets/error_dialog.dart';
 
 class NewPersonModel {
-  Future<int?> insertPerson(String name, String email, bool hasRevolut) async {
+  Future<String?> insertPerson(
+      String name, String email, bool hasRevolut, BuildContext context) async {
     if (kIsWeb) {
-      // Webes platformon Firestore használata
       try {
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
@@ -25,11 +26,30 @@ class NewPersonModel {
             hasRevolut: hasRevolut,
           );
 
-          final docRef = await peopleCollectionRef.add(newPerson.toMap());
-          return newPerson.id;
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
+
+          try {
+            final docRef = await peopleCollectionRef.add(newPerson.toMap());
+            Navigator.of(context).pop(); // Töltő ikon eltávolítása
+            return docRef.id;
+          } catch (error) {
+            Navigator.of(context).pop(); // Töltő ikon eltávolítása
+            ErrorDialog.show(context,
+                'Hiba történt a Firestore-ba való beszúrás közben: $error');
+            return null;
+          }
         }
       } catch (error) {
-        print('Hiba történt: $error');
+        Navigator.of(context).pop(); // Töltő ikon eltávolítása
+        ErrorDialog.show(context, 'Hiba történt: $error');
         return null;
       }
     } else {
@@ -40,7 +60,25 @@ class NewPersonModel {
         email: email,
         hasRevolut: hasRevolut,
       );
-      return await dbHelper.insertPerson(newPerson);
+
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+
+      try {
+        final id = await dbHelper.insertPerson(newPerson);
+        Navigator.of(context).pop(); // Töltő ikon eltávolítása
+        return id.toString();
+      } catch (error) {
+        Navigator.of(context).pop(); // Töltő ikon eltávolítása
+        ErrorDialog.show(context, 'Hiba történt a beszúrás közben: $error');
+        return null;
+      }
     }
   }
 }
