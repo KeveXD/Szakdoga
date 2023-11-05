@@ -12,18 +12,23 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
+  late Future<List<PersonDataModel>> _personFuture;
   late PersonPageViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
-    // Inicializáld a viewModel-et itt, amikor a BuildContext már elérhető
+    //_personFuture = viewModel.peopleFuture();
+    //_refreshPockets();
     viewModel = PersonPageViewModel(context);
     viewModel.loadPeople(context);
   }
 
   void _refreshPeople() {
-    setState(() {});
+    setState(() {
+      //viewModel.refreshPeople(context);
+      viewModel.loadPeople(context);
+    });
   }
 
   @override
@@ -100,12 +105,14 @@ class _PersonPageState extends State<PersonPage> {
                     builder: (BuildContext context) {
                       return NewPersonDialog(
                         onAddNewPerson: () {
-                          viewModel.refreshPeople(context);
-                          Navigator.of(context).pop();
+                          _refreshPeople();
+                          //Navigator.of(context).pop();
                         },
                       );
                     },
                   );
+
+                  //itt nem újulnak meg a listItemek
                 },
               ),
             ],

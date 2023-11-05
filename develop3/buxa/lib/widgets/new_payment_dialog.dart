@@ -32,8 +32,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
   bool isDebt = false;
   final TextEditingController pocketNameController = TextEditingController();
 
-  //_NewPaymentDialogState({required this.onAddNewPayment});
-
   void _showNewPaymentDialog() {
     showDialog(
       context: context,
@@ -124,7 +122,10 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
               ),
               ElevatedButton(
                 child: Text('Add'),
-                onPressed: _addPayment,
+                onPressed: () {
+                  _addPayment;
+                  Navigator.of(context).pop();
+                },
               ),
             ],
           ),
@@ -177,7 +178,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
       currency: currency,
     );
 
-    // Call the repository method to insert the payment
     PaymentRepository().insertPayment(payment).then((result) {
       if (result > 0) {
         onAddNewPayment();

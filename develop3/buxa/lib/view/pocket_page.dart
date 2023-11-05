@@ -4,8 +4,6 @@ import 'package:buxa/widgets/new_pocket_dialog.dart';
 import 'package:buxa/viewmodel/pocket_viewmodel.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
-//fokusz nem jo
-
 class PocketPage extends StatefulWidget {
   @override
   _PocketPageState createState() => _PocketPageState();
