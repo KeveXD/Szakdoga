@@ -12,16 +12,6 @@ class PersonModel {
 
     if (kIsWeb) {
       try {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        );
-
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           final firestore = FirebaseFirestore.instance;
@@ -40,21 +30,20 @@ class PersonModel {
           } else {
             ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
           }
-
-          Navigator.of(context).pop(); // Töltő ikon eltávolítása
         } else {
           ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
         }
       } catch (error) {
-        Navigator.of(context).pop(); // Töltő ikon eltávolítása
         ErrorDialog.show(context, 'Hiba történt: $error');
+      } finally {
+        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
       }
     } else {
       final repository = PersonRepository();
       peopleList = await repository.getPersonList();
 
       if (peopleList.isEmpty) {
-        ErrorDialog.show(context, 'Nincsenek adatok a helyi adatbázisban.');
+        // ErrorDialog.show(context, 'Nincsenek adatok a helyi adatbázisban.');
       }
     }
 
@@ -66,7 +55,7 @@ class PersonModel {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (BuildContext context) {
+        builder: (BuildContext dialogContext) {
           return Center(
             child: CircularProgressIndicator(),
           );
