@@ -91,9 +91,11 @@ class _PersonPageState extends State<PersonPage> {
             buttons: [
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
-                icon: Icons.menu,
-                title: 'Menü',
-                function: () {},
+                icon: Icons.arrow_back,
+                title: 'Tartozások',
+                function: () {
+                  Navigator.pop(context);
+                },
               ),
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
