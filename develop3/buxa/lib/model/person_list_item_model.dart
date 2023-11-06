@@ -11,7 +11,7 @@ class PersonListItemModel {
     return await _repository.getPersonList();
   }
 
-  Future<int> deletePerson(int id) async {
+  Future<int> deletePerson(int id, String name) async {
     if (kIsWeb) {
       try {
         final firestore = FirebaseFirestore.instance;
@@ -26,27 +26,26 @@ class PersonListItemModel {
               .collection('People');
 
           final personQuerySnapshot =
-              await peopleCollectionRef.where('id', isEqualTo: id).get();
+              await peopleCollectionRef.where('name', isEqualTo: name).get();
           if (personQuerySnapshot.docs.isNotEmpty) {
             // Csak egy elemet töröljünk, ha több azonosító is megegyezik, válasszuk ki azt, amelyiket törölni szeretnénk
             final personDocRef = personQuerySnapshot.docs.first.reference;
             await personDocRef.delete();
           } else {
-            print('Az $id azonosítójú személy nem található a Firestore-ban.');
+            //lol
+            print('Az $name nevű személy nem található a Firestore-ban.');
           }
         } else {
-          // Kezeld le az esetet, amikor a felhasználó nincs bejelentkezve
           print('Nem vagy bejelentkezve.');
         }
       } catch (e) {
         print('Hiba történt a személy törlése közben: $e');
       }
     } else {
-      // Ha nem webes platformon fut az alkalmazás, akkor helyi adatbázis használata
       print('A $id azonosítójú törölveeee');
       return await _repository.deletePerson(id);
     }
 
-    return 0; // Itt visszaadjuk az alapértelmezett értéket, de változtathatod
+    return 0;
   }
 }

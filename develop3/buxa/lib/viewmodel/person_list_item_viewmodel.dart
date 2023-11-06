@@ -16,7 +16,7 @@ class PersonListItemViewModel {
     loadPeople(context);
   }
 
-  Future<void> deletePerson(int id) async {
-    model.deletePerson(id);
+  Future<void> deletePerson(int id, String name) async {
+    model.deletePerson(id, name);
   }
 }
