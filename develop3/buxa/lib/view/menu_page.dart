@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/view/debt_page.dart';
 import 'package:buxa/view/pocket_page.dart';
@@ -9,6 +10,8 @@ class MenuPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWeb = kIsWeb; // Ellenőrizd, hogy weben fut-e az alkalmazás
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00008577),
@@ -88,32 +91,33 @@ class MenuPage extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                color: Color(0xFF232B59),
-                padding: EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CardWidget(
-                        icon: Icons.cloud_upload,
-                        label: 'Feltöltés',
-                        onTap: () {
-                          viewModel?.upload(context);
-                        },
+              if (!isWeb) // Csak akkor jelenjenek meg a gombok, ha nem weben fut az alkalmazás
+                Container(
+                  color: Color(0xFF232B59),
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CardWidget(
+                          icon: Icons.cloud_upload,
+                          label: 'Feltöltés',
+                          onTap: () {
+                            viewModel?.upload(context);
+                          },
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: CardWidget(
-                        icon: Icons.cloud_download,
-                        label: 'Letöltés',
-                        onTap: () {
-                          viewModel?.download(context);
-                        },
+                      Expanded(
+                        child: CardWidget(
+                          icon: Icons.cloud_download,
+                          label: 'Letöltés',
+                          onTap: () {
+                            viewModel?.download(context);
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
