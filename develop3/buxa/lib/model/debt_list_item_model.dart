@@ -20,11 +20,14 @@ class DebtListItemModel {
             .doc('userData')
             .collection('People');
 
-        final personSnapshot =
-            await peopleCollectionRef.doc(debtorPersonId.toString()).get();
+        final debtorPersonSnapshot = await peopleCollectionRef
+            .where('id', isEqualTo: debtorPersonId)
+            .get();
 
-        if (personSnapshot.exists) {
-          final debtorPersonName = personSnapshot.get('name') as String;
+        if (debtorPersonSnapshot.docs.isNotEmpty) {
+          final debtorPersonData =
+              debtorPersonSnapshot.docs.first.data() as Map<String, dynamic>;
+          final debtorPersonName = debtorPersonData['name'] as String;
           return debtorPersonName;
         }
       }
@@ -48,11 +51,13 @@ class DebtListItemModel {
             .doc('userData')
             .collection('People');
 
-        final personSnapshot =
-            await peopleCollectionRef.doc(personToId.toString()).get();
+        final personToSnapshot =
+            await peopleCollectionRef.where('id', isEqualTo: personToId).get();
 
-        if (personSnapshot.exists) {
-          final personToName = personSnapshot.get('name') as String;
+        if (personToSnapshot.docs.isNotEmpty) {
+          final personToData =
+              personToSnapshot.docs.first.data() as Map<String, dynamic>;
+          final personToName = personToData['name'] as String;
           return personToName;
         }
       }
