@@ -1,5 +1,6 @@
 import 'package:buxa/data_model/debt_data_model.dart';
 import 'package:buxa/database/debt_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,10 +13,29 @@ class DebtModel {
   }
 
   Future<List<DebtDataModel>> getDebtList() async {
-    if (!kIsWeb) {
+    if (kIsWeb) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final firestore = FirebaseFirestore.instance;
+        final userEmail = user.email;
+
+        final debtsCollectionRef = firestore
+            .collection(userEmail!)
+            .doc('userData')
+            .collection('Debts');
+
+        final debtQuerySnapshot = await debtsCollectionRef.get();
+        if (debtQuerySnapshot.docs.isNotEmpty) {
+          final debtList = debtQuerySnapshot.docs
+              .map((doc) => DebtDataModel.fromMap(doc.data()))
+              .toList();
+          return debtList;
+        }
+      }
+      return <DebtDataModel>[];
+    } else {
       return _repository.getDebtList();
     }
-    return <DebtDataModel>[];
   }
 
   Future<void> addDebt(DebtDataModel debt) async {
