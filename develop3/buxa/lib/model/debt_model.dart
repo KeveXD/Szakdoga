@@ -13,7 +13,6 @@ class DebtModel {
 
   Future<List<DebtDataModel>> getDebtList() async {
     if (!kIsWeb) {
-      // Csak akkor kérjük le az adatokat az adatbázisból, ha nem webes környezetben fut a program.
       return _repository.getDebtList();
     }
     return <DebtDataModel>[];

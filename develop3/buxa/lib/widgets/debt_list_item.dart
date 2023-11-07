@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/database/debt_repository.dart';
-import 'package:buxa/database/person_repository.dart'; // Importáld a PersonDatabaseHelper-t
 import 'package:buxa/data_model/debt_data_model.dart';
-import 'package:buxa/data_model/person_data_model.dart';
+import 'package:buxa/viewmodel/debt_list_item_viewmodel.dart';
 
 class DebtListItem extends StatelessWidget {
   final DebtDataModel debt;
+  final DebtListItemViewModel viewModel = DebtListItemViewModel();
   final VoidCallback onDelete;
   final VoidCallback onEdit;
 
@@ -32,12 +32,12 @@ class DebtListItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    FutureBuilder<PersonDataModel?>(
-                      future: PersonRepository()
-                          .getPersonById(debt.debtorPersonId ?? -1),
+                    FutureBuilder<String>(
+                      future:
+                          viewModel.loadDebtorName(debt.debtorPersonId ?? -1),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final debtorPersonName = snapshot.data?.name ?? 'N/A';
+                          final debtorPersonName = snapshot.data ?? 'N/A';
                           return Text(
                             "$debtorPersonName ",
                             style: TextStyle(
@@ -47,8 +47,7 @@ class DebtListItem extends StatelessWidget {
                             ),
                           );
                         } else {
-                          return Text(
-                              "Loading..."); // Vagy valamilyen hibaüzenet
+                          return Text("Loading...");
                         }
                       },
                     ),
@@ -68,12 +67,11 @@ class DebtListItem extends StatelessWidget {
                       Icons.arrow_forward,
                       color: Colors.blue,
                     ),
-                    FutureBuilder<PersonDataModel?>(
-                      future: PersonRepository()
-                          .getPersonById(debt.personToId ?? -1),
+                    FutureBuilder<String>(
+                      future: viewModel.loadPersonToName(debt.personToId ?? -1),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final personToName = snapshot.data?.name ?? 'N/A';
+                          final personToName = snapshot.data ?? 'N/A';
                           return Text(
                             " $personToName",
                             style: TextStyle(
@@ -83,8 +81,7 @@ class DebtListItem extends StatelessWidget {
                             ),
                           );
                         } else {
-                          return Text(
-                              "Loading..."); // Vagy valamilyen hibaüzenet
+                          return Text("Loading...");
                         }
                       },
                     ),
@@ -100,9 +97,7 @@ class DebtListItem extends StatelessWidget {
                     IconButton(
                       onPressed: () async {
                         final dbHelper = DebtRepository();
-
                         final result = await dbHelper.deleteDebt(debt);
-
                         onDelete();
                       },
                       icon: Icon(Icons.delete),
