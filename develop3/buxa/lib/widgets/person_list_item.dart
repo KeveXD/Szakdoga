@@ -83,7 +83,7 @@ class PersonListItem extends StatelessWidget {
                 IconButton(
                   onPressed: () {
                     viewModel
-                        .deletePerson(person.id ?? -10, person.name)
+                        .deletePerson(person.id ?? -1, person.name)
                         .then((result) {
                       onDelete();
                     });

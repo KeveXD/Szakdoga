@@ -67,4 +67,23 @@ class DebtListItemModel {
       return personTo?.name ?? 'N/A';
     }
   }
+
+  Future<void> deleteDebt(int id) async {
+    if (kIsWeb) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final firestore = FirebaseFirestore.instance;
+        final userEmail = user.email;
+
+        final peopleCollectionRef = firestore
+            .collection(userEmail!)
+            .doc('userData')
+            .collection('People');
+
+        await peopleCollectionRef.doc(id.toString()).delete();
+      }
+    } else {
+      await _debtRepository.deleteDebtById(id);
+    }
+  }
 }

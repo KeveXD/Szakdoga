@@ -13,4 +13,8 @@ class DebtListItemViewModel {
   Future<String> loadPersonToName(int personToId) async {
     return model.getPersonToName(personToId);
   }
+
+  Future<void> deleteDebt(int id) async {
+    return model.deleteDebt(id);
+  }
 }

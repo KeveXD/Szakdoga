@@ -96,8 +96,7 @@ class DebtListItem extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () async {
-                        final dbHelper = DebtRepository();
-                        final result = await dbHelper.deleteDebt(debt);
+                        viewModel.deleteDebt(debt.id ?? -1);
                         onDelete();
                       },
                       icon: Icon(Icons.delete),
