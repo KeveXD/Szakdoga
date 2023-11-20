@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
+import 'package:buxa/data_model/person_data_model.dart';
 import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/database/person_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DebtDetailsModel {
   late List<DebtDataModel> allDebts;
@@ -12,6 +15,31 @@ class DebtDetailsModel {
 
   Future<void> loadFromDatabase() async {
     if (kIsWeb) {
+      // Web platformon használjuk a Firestore-t
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final debtsCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Debts');
+
+          final debtQuerySnapshot = await debtsCollectionRef.get();
+          if (debtQuerySnapshot.docs.isNotEmpty) {
+            final debtList = debtQuerySnapshot.docs
+                .map((doc) => DebtDataModel.fromMap(doc.data()))
+                .toList();
+            allDebts = debtList;
+          }
+        } else {
+          // Kezeld le az esetet, amikor a felhasználó nincs bejelentkezve
+        }
+      } catch (e) {
+        print('Hiba történt a lekérdezés közben: $e');
+      }
     } else {
       // Mobil platformon használjuk a DebtRepository-t
       final debtDbHelper = DebtRepository();
@@ -25,13 +53,17 @@ class DebtDetailsModel {
     }
 
     Map<String, int> debtsMap = {};
-    final personDbHelper = PersonRepository();
+    final personDbHelper = kIsWeb ? null : PersonRepository();
 
     //kiveszem az összes nevet a debtListItem-ekből
     for (DebtDataModel debt in allDebts) {
-      final debtorPerson =
-          await personDbHelper.getPersonById(debt.debtorPersonId!);
-      final personTo = await personDbHelper.getPersonById(debt.personToId!);
+      final debtorPerson = kIsWeb
+          ? await getPersonByIdWeb(debt.debtorPersonId!)
+          : await personDbHelper!.getPersonById(debt.debtorPersonId!);
+
+      final personTo = kIsWeb
+          ? await getPersonByIdWeb(debt.personToId!)
+          : await personDbHelper!.getPersonById(debt.personToId!);
 
       if (debtorPerson != null) {
         debtsMap[debtorPerson.name] = debtsMap.containsKey(debtorPerson.name)
@@ -90,9 +122,9 @@ class DebtDetailsModel {
             (debtsMap[debtorWithLargestDebt] ?? 0) - largestDebt;
 
         final debtorPerson =
-            await personDbHelper.getPersonByName(debtorWithLargestDebt);
+            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
         final personTo =
-            await personDbHelper.getPersonByName(debtorWithSmallestDebt);
+            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
@@ -109,9 +141,9 @@ class DebtDetailsModel {
             (debtsMap[debtorWithSmallestDebt] ?? 0) - smallestDebt;
 
         final debtorPerson =
-            await personDbHelper.getPersonByName(debtorWithLargestDebt);
+            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
         final personTo =
-            await personDbHelper.getPersonByName(debtorWithSmallestDebt);
+            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
@@ -124,5 +156,52 @@ class DebtDetailsModel {
     }
 
     return resultDebts;
+  }
+
+  Future<PersonDataModel?> getPersonByIdWeb(int id) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
+      final userEmail = user.email;
+
+      final personQuerySnapshot = await firestore
+          .collection(userEmail!)
+          .doc('userData')
+          .collection('People')
+          .where('id', isEqualTo: id)
+          .get();
+
+      if (personQuerySnapshot.docs.isNotEmpty) {
+        final personDoc = personQuerySnapshot.docs.first;
+        return PersonDataModel.fromMap(personDoc.data()!);
+      } else {
+        print("id-s függvény nem jó");
+      }
+    }
+
+    return null;
+  }
+
+  Future<PersonDataModel?> getPersonByNameWeb(String name) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final firestore = FirebaseFirestore.instance;
+      final userEmail = user.email;
+
+      final personQuerySnapshot = await firestore
+          .collection(userEmail!)
+          .doc('userData')
+          .collection('People')
+          .where('name', isEqualTo: name)
+          .get();
+
+      if (personQuerySnapshot.docs.isNotEmpty) {
+        final personDoc = personQuerySnapshot.docs.first;
+        return PersonDataModel.fromMap(personDoc.data()!);
+      } else
+        print("lol name");
+    }
+
+    return null;
   }
 }
