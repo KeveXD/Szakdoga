@@ -1,13 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
-import 'package:buxa/widgets/error_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
 
 class NewDebtDialogModel {
-  Future<int?> insertPersonIfNeeded(String name) async {
+  Future insertPersonIfNeeded(String name) async {
     if (!kIsWeb) {
       final personDbHelper = PersonRepository();
       final existingPerson = await personDbHelper.getPersonByName(name);
@@ -18,9 +18,40 @@ class NewDebtDialogModel {
         return personDbHelper.insertPerson(newPerson);
       }
     } else {
-      // Web esetén itt kezelhetjük a személy hozzáadását, ha szükséges.
-      // Például a helyi tároló vagy hálózati szolgáltatások használatával.
-      return null;
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          // Ellenőrizzük, hogy van-e már személy az adott névvel
+          final existingPersonQuerySnapshot = await firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People')
+              .where('name', isEqualTo: name)
+              .get();
+
+          if (existingPersonQuerySnapshot.docs.isNotEmpty) {
+            final existingPersonDoc = existingPersonQuerySnapshot.docs.first;
+            return existingPersonDoc['id'];
+          }
+
+          // Ha nincs, hozzáadjuk az új személyt
+          final newPersonDoc = await firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People')
+              .add({'name': name});
+
+          return newPersonDoc.id;
+        }
+      } catch (e) {
+        // Hiba kezelése
+        print('Hiba történt a személy hozzáadása közben: $e');
+
+        return null;
+      }
     }
   }
 
@@ -29,8 +60,23 @@ class NewDebtDialogModel {
       final dbHelper = DebtRepository();
       await dbHelper.insertDebt(newDebt);
     } else {
-      // Web esetén itt kezelhetjük az adósság hozzáadását, ha szükséges.
-      // Például a helyi tároló vagy hálózati szolgáltatások használatával.
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          // Adósság hozzáadása a Firestore-ba
+          await firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Debts')
+              .add(newDebt.toMap());
+        }
+      } catch (e) {
+        // Hiba kezelése
+        print('Hiba történt az adósság hozzáadása közben: $e');
+      }
     }
   }
 
@@ -39,9 +85,29 @@ class NewDebtDialogModel {
       final personDbHelper = PersonRepository();
       return await personDbHelper.getPersonList();
     } else {
-      // Web esetén itt kezelhetjük a személyek lekérését, ha szükséges.
-      // Például a helyi tároló vagy hálózati szolgáltatások használatával.
-      return [];
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          // Személyek lekérdezése a Firestore-ból
+          final personQuerySnapshot = await firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People')
+              .get();
+
+          return personQuerySnapshot.docs
+              .map((doc) => PersonDataModel.fromMap(doc.data()))
+              .toList();
+        }
+      } catch (e) {
+        // Hiba kezelése
+        print('Hiba történt a személyek lekérdezése közben: $e');
+        return [];
+      }
     }
+    return [];
   }
 }
