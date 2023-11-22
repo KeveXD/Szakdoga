@@ -130,7 +130,10 @@ class NewPersonModel {
           uniqueId++;
         }
       } while (idExists);
-      return uniqueId;
+
+      //ezt majd ki lehet venni
+      if (uniqueId > 10000) return uniqueId;
+      return uniqueId + 10000;
     }
     return 0;
   }
