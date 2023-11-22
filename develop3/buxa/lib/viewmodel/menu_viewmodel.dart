@@ -10,8 +10,10 @@ import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
 import 'package:buxa/database/pocket_repository.dart';
+import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
+import 'package:buxa/data_model/payment_data_model.dart';
 
 class MenuPageViewModel {
   MenuPageViewModel();
@@ -332,6 +334,99 @@ class MenuPageViewModel {
 
           final pocket = PocketDataModel.fromMap(pocketData);
           await pocketRepo.insertPocket(pocket);
+        }
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      ErrorDialog.show(context, 'Hiba történt: $error');
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  Future<void> uploadPayments(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      String userEmail = getUserEmail() ?? 'example@gmail.com';
+
+      DocumentReference paymentsCollectionRef =
+          firestore.collection(userEmail).doc('userData');
+
+      QuerySnapshot existingPayments =
+          await paymentsCollectionRef.collection('Payments').get();
+      for (QueryDocumentSnapshot document in existingPayments.docs) {
+        await document.reference.delete();
+      }
+
+      // Placeholder, helyettesítsd a saját logikáddal a tranzakciók lekérését
+      final paymentRepo = PaymentRepository();
+      final paymentList = await paymentRepo.getPaymentList();
+
+      for (final payment in paymentList) {
+        await paymentsCollectionRef.collection('Payments').add(payment.toMap());
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      ErrorDialog.show(context, 'Hiba történt: $error');
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  Future<void> downloadPayments(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      await Firebase.initializeApp();
+
+      bool userLoggedIn = true;
+
+      if (userLoggedIn) {
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        String userEmail = getUserEmail() ?? 'example@gmail.com';
+
+        DocumentReference paymentsCollectionRef =
+            firestore.collection(userEmail).doc('userData');
+
+        final paymentRepo = PaymentRepository();
+
+        // Letölti a Firestore-ból a tranzakciókat
+        QuerySnapshot paymentsCollection =
+            await paymentsCollectionRef.collection('Payments').get();
+
+        // Törli a lokális repóból a tranzakciókat
+        final localPayments = await paymentRepo.getPaymentList();
+        for (final payment in localPayments) {
+          await paymentRepo.deletePayment(payment.id!);
+        }
+
+        // Betölti a letöltött tranzakciókat a repository-ba
+        for (QueryDocumentSnapshot paymentSnapshot in paymentsCollection.docs) {
+          Map<String, dynamic> paymentData =
+              paymentSnapshot.data() as Map<String, dynamic>;
+
+          final payment = PaymentDataModel.fromMap(paymentData);
+          await paymentRepo.insertPayment(payment);
         }
       }
     } catch (error) {

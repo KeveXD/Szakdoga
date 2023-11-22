@@ -106,14 +106,6 @@ class _PaymentPageState extends State<PaymentPage> {
             buttons: [
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
-                icon: Icons.share,
-                title: 'Szétosztás',
-                function: () {
-                  // Szétosztás logika
-                },
-              ),
-              CustomButtonModel(
-                color: Color.fromARGB(255, 158, 202, 62),
                 icon: Icons.add,
                 title: 'Új',
                 function: () {
@@ -122,7 +114,6 @@ class _PaymentPageState extends State<PaymentPage> {
                     builder: (BuildContext context) {
                       return NewPaymentDialog(
                         onAddNewPayment: () {
-                          // Add a new payment using the provided data
                           _refreshPayments();
                           Navigator.of(context).pop();
                         },

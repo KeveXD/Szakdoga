@@ -1,11 +1,6 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
-import 'package:buxa/database/payment_repository.dart';
-import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/data_model/pocket_data_model.dart';
-import 'package:buxa/model/new_payment_dialog_service.dart';
+import 'package:buxa/viewmodel/new_payment_viewmodel.dart';
+import 'package:flutter/material.dart';
 
 class NewPaymentDialog extends StatefulWidget {
   final Function() onAddNewPayment;
@@ -13,24 +8,17 @@ class NewPaymentDialog extends StatefulWidget {
   NewPaymentDialog({required this.onAddNewPayment});
 
   @override
-  _NewPaymentDialogState createState() =>
-      _NewPaymentDialogState(onAddNewPayment: onAddNewPayment);
+  _NewPaymentDialogState createState() => _NewPaymentDialogState();
 }
 
 class _NewPaymentDialogState extends State<NewPaymentDialog> {
-  final NewPaymentDialogService service = NewPaymentDialogService();
-
-  _NewPaymentDialogState({required this.onAddNewPayment});
-
-  final Function() onAddNewPayment;
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  String selectedCurrency = 'USD'; // Alapértelmezett deviza
   final TextEditingController dateController = TextEditingController();
   final TextEditingController commentController = TextEditingController();
-  PaymentType selectedPaymentType = PaymentType.Income;
-  bool isDebt = false;
   final TextEditingController pocketNameController = TextEditingController();
+
+  late final NewPaymentViewModel viewModel;
 
   void _showNewPaymentDialog() {
     showDialog(
@@ -38,19 +26,19 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
       builder: (BuildContext context) {
         return SingleChildScrollView(
           child: AlertDialog(
-            title: Text('Add New Payment'),
+            title: Text('Költség hozzáadása'),
             content: Column(
               children: <Widget>[
                 TextField(
                   controller: titleController,
-                  decoration: InputDecoration(labelText: 'Title'),
+                  decoration: InputDecoration(labelText: 'Cím'),
                 ),
                 TextField(
                   controller: commentController,
-                  decoration: InputDecoration(labelText: 'Comment'),
+                  decoration: InputDecoration(labelText: 'Megjegyzés'),
                 ),
                 DropdownButton<PaymentType>(
-                  value: selectedPaymentType,
+                  value: viewModel.selectedPaymentType,
                   items: PaymentType.values.map((PaymentType value) {
                     return DropdownMenuItem<PaymentType>(
                       value: value,
@@ -59,35 +47,35 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedPaymentType = value!;
+                      viewModel.selectedPaymentType = value!;
                     });
                   },
                 ),
                 Row(
                   children: <Widget>[
                     Checkbox(
-                      value: isDebt,
+                      value: viewModel.isDebt,
                       onChanged: (value) {
                         setState(() {
-                          isDebt = value!;
+                          viewModel.isDebt = value!;
                         });
                       },
                     ),
-                    Text('Is Debt'),
+                    Text('Tartozás'),
                   ],
                 ),
                 TextField(
                   controller: pocketNameController,
-                  decoration: InputDecoration(labelText: 'Pocket Name'),
+                  decoration: InputDecoration(labelText: 'Zseb név'),
                 ),
                 TextField(
                   controller: amountController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: 'Amount'),
+                  decoration: InputDecoration(labelText: 'Összeg'),
                 ),
                 DropdownButton<String>(
-                  value: selectedCurrency,
-                  items: <String>['USD', 'EUR', 'GBP', 'HUF', 'JPY', 'CHF']
+                  value: viewModel.selectedCurrency,
+                  items: <String>['HUF', 'EUR', 'GBP', 'USD', 'JPY', 'CHF']
                       .map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
@@ -96,18 +84,18 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedCurrency = value!;
+                      viewModel.selectedCurrency = value!;
                     });
                   },
                 ),
                 InkWell(
                   onTap: () {
-                    _showDatePicker();
+                    viewModel.selectDate(context);
                   },
                   child: IgnorePointer(
                     child: TextField(
                       controller: dateController,
-                      decoration: InputDecoration(labelText: 'Date'),
+                      decoration: InputDecoration(labelText: 'Dátum'),
                     ),
                   ),
                 ),
@@ -115,15 +103,16 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('Cancel'),
+                child: Text('Mégsem'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               ElevatedButton(
-                child: Text('Add'),
+                child: Text('Hozzáad'),
                 onPressed: () {
-                  _addPayment;
+                  viewModel.addPayment(context);
+                  widget.onAddNewPayment();
                   Navigator.of(context).pop();
                 },
               ),
@@ -134,62 +123,15 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
     );
   }
 
-  Future<void> _showDatePicker() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != DateTime.now()) {
-      setState(() {
-        dateController.text = picked.toLocal().toString().split(' ')[0];
-      });
-    }
-  }
-
-  void _addPayment() async {
-    final date = dateController.text.isNotEmpty
-        ? DateTime.parse(dateController.text)
-        : DateTime.now();
-    final title =
-        titleController.text.isNotEmpty ? titleController.text : 'valami';
-    final comment =
-        commentController.text.isNotEmpty ? commentController.text : 'komi';
-    final type = selectedPaymentType;
-    final pocketName = pocketNameController.text.isNotEmpty
-        ? pocketNameController.text
-        : 'Pocket1';
-    final amount = amountController.text.isNotEmpty
-        ? double.parse(amountController.text)
-        : 1000.0;
-    final currency = selectedCurrency;
-
-    final pocketId = await service.getOrCreatePocketId(pocketName);
-
-    final payment = PaymentDataModel(
-      date: date,
-      title: title,
-      comment: comment,
-      type: type,
-      isDebt: isDebt,
-      pocketId: pocketId,
-      amount: amount,
-      currency: currency,
-    );
-
-    PaymentRepository().insertPayment(payment).then((result) {
-      if (result > 0) {
-        onAddNewPayment();
-      }
-    });
-    Navigator.of(context).pop();
-  }
-
   @override
   void initState() {
     super.initState();
+    viewModel = NewPaymentViewModel(onAddNewPayment: () {
+      // Itt írd le azokat a lépéseket, amelyeket az onAddNewPayment meghívásakor kell végrehajtani
+    });
+
     Future.delayed(Duration.zero, () {
+      viewModel.init();
       _showNewPaymentDialog();
     });
   }
