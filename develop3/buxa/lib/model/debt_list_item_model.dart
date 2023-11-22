@@ -31,11 +31,11 @@ class DebtListItemModel {
           return debtorPersonName;
         }
       }
-      return 'N/A';
+      return 'nincs személy';
     } else {
       final debtorPerson =
           await PersonRepository().getPersonById(debtorPersonId);
-      return debtorPerson?.name ?? 'N/A';
+      return debtorPerson?.name ?? 'nincs személy';
     }
   }
 
@@ -61,26 +61,37 @@ class DebtListItemModel {
           return personToName;
         }
       }
-      return 'N/A';
+      return 'nincs személy';
     } else {
       final personTo = await PersonRepository().getPersonById(personToId);
-      return personTo?.name ?? 'N/A';
+      return personTo?.name ?? 'nincs személy';
     }
   }
 
   Future<void> deleteDebt(int id) async {
     if (kIsWeb) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final firestore = FirebaseFirestore.instance;
-        final userEmail = user.email;
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
 
-        final peopleCollectionRef = firestore
-            .collection(userEmail!)
-            .doc('userData')
-            .collection('People');
+          final debtsCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Debts');
 
-        await peopleCollectionRef.doc(id.toString()).delete();
+          // Keresd meg és töröld a dokumentumot az id alapján
+          final querySnapshot =
+              await debtsCollectionRef.where('id', isEqualTo: id).get();
+          querySnapshot.docs.forEach((doc) {
+            doc.reference.delete();
+          });
+
+          // print('Debt deleted successfully');
+        }
+      } catch (error) {
+        //print('Error deleting debt: $error');
       }
     } else {
       await _debtRepository.deleteDebtById(id);

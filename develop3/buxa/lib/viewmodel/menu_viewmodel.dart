@@ -9,7 +9,9 @@ import 'package:buxa/widgets/error_dialog.dart';
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
+import 'package:buxa/database/pocket_repository.dart';
 import 'package:buxa/database/debt_repository.dart';
+import 'package:buxa/data_model/pocket_data_model.dart';
 
 class MenuPageViewModel {
   MenuPageViewModel();
@@ -22,11 +24,13 @@ class MenuPageViewModel {
   void upload(BuildContext context) {
     uploadPeopleAndInitialize(context);
     uploadDebts(context);
+    uploadPockets(context);
   }
 
   void download(BuildContext context) {
     downloadPeople(context);
     downloadDebts(context);
+    downloadPockets(context);
   }
 
   void navigateToQueryPage(BuildContext context) {
@@ -225,6 +229,109 @@ class MenuPageViewModel {
 
           final debt = DebtDataModel.fromMap(debtData);
           await debtRepo.insertDebt(debt);
+        }
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      ErrorDialog.show(context, 'Hiba történt: $error');
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  Future<void> uploadPockets(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+      String userEmail = getUserEmail() ?? 'example@gmail.com';
+
+      DocumentReference pocketsCollectionRef =
+          firestore.collection(userEmail).doc('userData');
+
+      // Ellenőrzi, hogy van-e már 'Pockets' kollekció
+      bool pocketsCollectionExists = (await pocketsCollectionRef.get()).exists;
+
+      if (!pocketsCollectionExists) {
+        // Ha nincs 'Pockets' kollekció, létrehozza
+        await pocketsCollectionRef.set({
+          'created_at': FieldValue.serverTimestamp(),
+        });
+      }
+
+      QuerySnapshot existingPockets =
+          await pocketsCollectionRef.collection('Pockets').get();
+      for (QueryDocumentSnapshot document in existingPockets.docs) {
+        await document.reference.delete();
+      }
+
+      // Placeholder, helyettesítsd a saját logikáddal a pénztárcák lekérését
+      final pocketRepo = PocketRepository();
+      final pocketList = await pocketRepo.getPocketList();
+
+      for (final pocket in pocketList) {
+        await pocketsCollectionRef.collection('Pockets').add(pocket.toMap());
+      }
+    } catch (error) {
+      Navigator.of(context).pop();
+      ErrorDialog.show(context, 'Hiba történt: $error');
+    }
+
+    Navigator.of(context).pop();
+  }
+
+  Future<void> downloadPockets(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+
+    try {
+      await Firebase.initializeApp();
+
+      bool userLoggedIn = true;
+
+      if (userLoggedIn) {
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+        String userEmail = getUserEmail() ?? 'example@gmail.com';
+
+        DocumentReference pocketsCollectionRef =
+            firestore.collection(userEmail).doc('userData');
+
+        final pocketRepo = PocketRepository();
+
+        // Letölti a Firestore-ból a Pocket-eket
+        QuerySnapshot pocketsCollection =
+            await pocketsCollectionRef.collection('Pockets').get();
+
+        // Törli a lokális repóból a Pocket-eket
+        final localPockets = await pocketRepo.getPocketList();
+        for (final pocket in localPockets) {
+          await pocketRepo.deletePocket(pocket.id!);
+        }
+
+        // Betölti a letöltött Pocket-eket a repository-ba
+        for (QueryDocumentSnapshot pocketSnapshot in pocketsCollection.docs) {
+          Map<String, dynamic> pocketData =
+              pocketSnapshot.data() as Map<String, dynamic>;
+
+          final pocket = PocketDataModel.fromMap(pocketData);
+          await pocketRepo.insertPocket(pocket);
         }
       }
     } catch (error) {

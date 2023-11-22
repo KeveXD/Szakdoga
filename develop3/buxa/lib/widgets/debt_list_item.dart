@@ -33,11 +33,11 @@ class DebtListItem extends StatelessWidget {
                 Row(
                   children: [
                     FutureBuilder<String>(
-                      future:
-                          viewModel.loadDebtorName(debt.debtorPersonId ?? -1),
+                      future: viewModel.loadDebtorName(debt.personToId ?? -1),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final debtorPersonName = snapshot.data ?? 'N/A';
+                          final debtorPersonName =
+                              snapshot.data ?? 'nincs személy';
                           return Text(
                             "$debtorPersonName ",
                             style: TextStyle(
@@ -68,10 +68,11 @@ class DebtListItem extends StatelessWidget {
                       color: Colors.blue,
                     ),
                     FutureBuilder<String>(
-                      future: viewModel.loadPersonToName(debt.personToId ?? -1),
+                      future:
+                          viewModel.loadPersonToName(debt.debtorPersonId ?? -1),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          final personToName = snapshot.data ?? 'N/A';
+                          final personToName = snapshot.data ?? 'nincs személy';
                           return Text(
                             " $personToName",
                             style: TextStyle(
@@ -96,8 +97,9 @@ class DebtListItem extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () async {
-                        viewModel.deleteDebt(debt.id ?? -1);
-                        onDelete();
+                        viewModel.deleteDebt(debt.id ?? -1).then((result) {
+                          onDelete();
+                        });
                       },
                       icon: Icon(Icons.delete),
                     ),
