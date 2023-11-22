@@ -37,8 +37,9 @@ class NewDebtDialogViewModel {
       return;
     }
 
-    final personToId = await model.insertPersonIfNeeded(name);
-    final debtorPersonId = await model.insertPersonIfNeeded(debtorName);
+    final personToId = await model.insertPersonIfNeeded(name, context);
+    final debtorPersonId =
+        await model.insertPersonIfNeeded(debtorName, context);
 
     final newDebt = DebtDataModel(
       debtorPersonId: debtorPersonId,

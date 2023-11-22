@@ -5,11 +5,12 @@ import 'package:buxa/widgets/error_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
+import 'package:buxa/model/new_person_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewDebtDialogModel {
-  Future<int?> insertPersonIfNeeded(String name) async {
+  Future<int?> insertPersonIfNeeded(String name, BuildContext context) async {
     if (!kIsWeb) {
       final personDbHelper = PersonRepository();
       final existingPerson = await personDbHelper.getPersonByName(name);
@@ -31,17 +32,28 @@ class NewDebtDialogModel {
           if (existingPerson != null) {
             return existingPerson.id;
           } else {
-            final newPersonDocRef = await firestore
+            final peopleCollectionRef = firestore
                 .collection(userEmail!)
                 .doc('userData')
-                .collection('People')
-                .add({'name': name});
+                .collection('People');
 
-            return int.tryParse(newPersonDocRef.id);
+            try {
+              final NewPersonModel _model = NewPersonModel();
+              final result = await _model.insertPerson(
+                  name, "looool@gmail.com", false, context);
+
+              final newPerson2 = await getPersonByNameWeb(name);
+              print("loool: ${newPerson2?.id}");
+              return newPerson2?.id;
+            } catch (error) {
+              print('Hiba történt a Firestore-ba való beszúrás közben: $error');
+              return null;
+            }
+
+            //return int.tryParse(newPersonDocRef.id);
           }
         }
       } catch (e) {
-        // Hiba kezelése
         print('Hiba történt a személy hozzáadása közben: $e');
         return null;
       }
@@ -67,7 +79,6 @@ class NewDebtDialogModel {
               .add(newDebt.toMap());
         }
       } catch (e) {
-        // Hiba kezelése
         print('Hiba történt az adósság hozzáadása közben: $e');
       }
     }
