@@ -8,6 +8,8 @@ import 'package:buxa/widgets/error_dialog.dart';
 class NewDebtDialogViewModel {
   final NewDebtDialogModel model = NewDebtDialogModel();
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController debtorNameController = TextEditingController();
   bool hasRevolut = false;
 
   List<DropdownMenuItem<int>> personDropdownItems = [];
@@ -29,17 +31,18 @@ class NewDebtDialogViewModel {
   Future<void> addNewDebt(
     BuildContext context,
     VoidCallback onAddNewElement,
-    String name,
-    String debtorName,
   ) async {
-    if (name.isEmpty || debtorName.isEmpty || amountController.text.isEmpty) {
+    if (nameController.text.isEmpty ||
+        debtorNameController.text.isEmpty ||
+        amountController.text.isEmpty) {
       ErrorDialog.show(context, 'Az összes mező kitöltése kötelező.');
       return;
     }
 
-    final personToId = await model.insertPersonIfNeeded(name, context);
+    final personToId =
+        await model.insertPersonIfNeeded(nameController.text, context);
     final debtorPersonId =
-        await model.insertPersonIfNeeded(debtorName, context);
+        await model.insertPersonIfNeeded(debtorNameController.text, context);
 
     final newDebt = DebtDataModel(
       debtorPersonId: debtorPersonId,

@@ -16,7 +16,7 @@ class NewPaymentViewModel {
 
   Function()? onAddNewPayment;
 
-  NewPaymentViewModel({required this.onAddNewPayment});
+  NewPaymentViewModel();
 
   void init() {}
 

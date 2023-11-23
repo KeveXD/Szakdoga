@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class DatePickerWidget extends StatelessWidget {
   final String label;
-  final DateTime? date;
+  final DateTime date;
   final TextEditingController controller;
-  final Function(DateTime?) onDateSelected;
+  final ValueChanged<DateTime?> onDateSelected;
 
   DatePickerWidget({
     required this.label,
@@ -18,45 +18,37 @@ class DatePickerWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
         InkWell(
-          onTap: () {
-            showDatePicker(
+          onTap: () async {
+            DateTime? picked = await showDatePicker(
               context: context,
-              initialDate: date ?? DateTime.now(),
+              initialDate: date,
               firstDate: DateTime(2000),
               lastDate: DateTime(2101),
-            ).then((pickedDate) {
-              if (pickedDate != null) {
-                onDateSelected(pickedDate);
-              }
-            });
+            );
+
+            if (picked != null) {
+              onDateSelected(picked);
+              controller.text = picked.toLocal().toString().split(' ')[0];
+            }
           },
-          child: Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.all(10),
-                child: Text(label),
+          child: IgnorePointer(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: 'Dátum',
               ),
-              Spacer(),
-              Text(
-                formatDate(date) ?? 'Válassz dátumot',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ],
     );
-  }
-
-  String? formatDate(DateTime? date) {
-    return date?.toLocal().toString().split(' ')[0];
   }
 }
