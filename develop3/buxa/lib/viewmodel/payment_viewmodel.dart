@@ -14,8 +14,4 @@ class PaymentViewModel {
       BuildContext context, PocketDataModel pocket) async {
     paymentsFuture = model.loadPayments(context, pocket);
   }
-
-  Future<void> addNewPayment(Map<String, dynamic> data) {
-    return model.addNewPayment(data);
-  }
 }
