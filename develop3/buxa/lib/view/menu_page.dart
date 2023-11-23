@@ -1,8 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:buxa/view/debt_page.dart';
-import 'package:buxa/view/pocket_page.dart';
-import 'package:buxa/view/query_page.dart';
 import 'package:buxa/viewmodel/menu_viewmodel.dart';
 
 class MenuPage extends StatelessWidget {
@@ -82,7 +79,7 @@ class MenuPage extends StatelessWidget {
                     Expanded(
                       child: CardWidget(
                         icon: Icons.shopping_cart,
-                        label: 'Pénz áram',
+                        label: 'Költések',
                         onTap: () {
                           viewModel?.navigateToPocketPage(context);
                         },

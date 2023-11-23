@@ -27,12 +27,14 @@ class MenuPageViewModel {
     uploadPeopleAndInitialize(context);
     uploadDebts(context);
     uploadPockets(context);
+    uploadPayments(context);
   }
 
   void download(BuildContext context) {
     downloadPeople(context);
     downloadDebts(context);
     downloadPockets(context);
+    downloadPayments(context);
   }
 
   void navigateToQueryPage(BuildContext context) {
@@ -362,6 +364,23 @@ class MenuPageViewModel {
 
       DocumentReference paymentsCollectionRef =
           firestore.collection(userEmail).doc('userData');
+
+      // Ellenőrzi, hogy van-e már 'Payments' kollekció
+      bool paymentsCollectionExists = false;
+
+      try {
+        paymentsCollectionExists = (await paymentsCollectionRef.get()).exists;
+      } catch (e) {
+        // Hiba történt, például mert a kollekció még nem létezik
+        print('Error checking if Payments collection exists: $e');
+      }
+
+      if (!paymentsCollectionExists) {
+        // Ha nincs 'Payments' kollekció, létrehozza
+        await paymentsCollectionRef.set({
+          'created_at': FieldValue.serverTimestamp(),
+        });
+      }
 
       QuerySnapshot existingPayments =
           await paymentsCollectionRef.collection('Payments').get();
