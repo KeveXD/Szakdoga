@@ -31,8 +31,7 @@ class _NewPocketDialogState extends State<NewPocketDialog> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        viewModel = NewPocketViewModel(
-            context: context); // Create the viewModel with context
+        viewModel = NewPocketViewModel(context: context);
         return AlertDialog(
           title: Text('Új Zseb hozzáadása'),
           content: Column(

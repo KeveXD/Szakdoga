@@ -49,29 +49,4 @@ class PersonModel {
 
     return peopleList;
   }
-
-  Future<void> refreshPeople(BuildContext context) async {
-    if (!kIsWeb) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-      );
-
-      try {
-        final repository = PersonRepository();
-        await repository.getPersonList();
-        Navigator.of(context).pop(); // Töltő ikon eltávolítása
-      } catch (error) {
-        Navigator.of(context).pop(); // Töltő ikon eltávolítása
-        ErrorDialog.show(context, 'Hiba történt a frissítés közben: $error');
-      }
-    } else {
-      ErrorDialog.show(context, 'A frissítés webes platformon nem elérhető.');
-    }
-  }
 }
