@@ -134,7 +134,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                   ElevatedButton(
                     child: Text('Hozzáad'),
                     onPressed: () {
-                      viewModel.addPayment(context);
+                      viewModel.addPayment(context, onAddNewPayment);
                       widget.onAddNewPayment();
                       Navigator.of(context).pop();
                     },

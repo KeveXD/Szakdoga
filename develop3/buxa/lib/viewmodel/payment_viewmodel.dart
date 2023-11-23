@@ -1,23 +1,21 @@
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/model/payment_model.dart';
+import 'package:buxa/data_model/pocket_data_model.dart';
+import 'package:flutter/material.dart';
 
-class PaymentPageViewModel {
-  final PaymentPageModel model;
+class PaymentViewModel {
+  final PaymentModel model = PaymentModel();
   late Future<List<PaymentDataModel>> paymentsFuture;
 
-  PaymentPageViewModel({required this.model});
+  PaymentViewModel(BuildContext context) {}
 
-  Future<void> loadPayments() async {
-    paymentsFuture = model.loadPayments();
-  }
-
-  Future<void> refreshPayments() {
-    return loadPayments();
+  Future<void> loadPayments(
+      BuildContext context, PocketDataModel pocket) async {
+    paymentsFuture = model.loadPayments(context, pocket);
   }
 
   Future<void> addNewPayment(Map<String, dynamic> data) {
-    // Implementálj hozzáadási logikát a model használatával
     return model.addNewPayment(data);
   }
 }

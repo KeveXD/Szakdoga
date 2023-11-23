@@ -13,14 +13,14 @@ class PersonPage extends StatefulWidget {
 
 class _PersonPageState extends State<PersonPage> {
   late Future<List<PersonDataModel>> _personFuture;
-  late PersonPageViewModel viewModel;
+  late PersonViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
     //_personFuture = viewModel.peopleFuture();
     //_refreshPockets();
-    viewModel = PersonPageViewModel(context);
+    viewModel = PersonViewModel(context);
     viewModel.loadPeople(context);
   }
 

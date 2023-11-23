@@ -29,9 +29,7 @@ class NewDebtDialogViewModel {
   }
 
   Future<void> addNewDebt(
-    BuildContext context,
-    VoidCallback onAddNewElement,
-  ) async {
+      BuildContext context, VoidCallback onAddNewElement) async {
     if (nameController.text.isEmpty ||
         debtorNameController.text.isEmpty ||
         amountController.text.isEmpty) {

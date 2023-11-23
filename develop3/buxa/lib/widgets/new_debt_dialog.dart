@@ -14,8 +14,6 @@ class NewDebtDialog extends StatefulWidget {
 class _NewDebtDialogState extends State<NewDebtDialog> {
   final NewDebtDialogViewModel viewModel = NewDebtDialogViewModel();
   final VoidCallback onAddNewElement;
-  //final TextEditingController nameController = TextEditingController();
-  //final TextEditingController debtorNameController = TextEditingController();
 
   _NewDebtDialogState({required this.onAddNewElement});
 
