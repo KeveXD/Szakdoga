@@ -2,7 +2,9 @@ import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/widgets/datepicker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/database/payment_repository.dart';
+import 'package:buxa/database/pocket_repository.dart';
 import 'package:buxa/widgets/error_dialog.dart';
+import 'package:buxa/data_model/pocket_data_model.dart';
 
 class NewPaymentViewModel {
   final TextEditingController titleController = TextEditingController();
@@ -13,12 +15,16 @@ class NewPaymentViewModel {
   PaymentType selectedPaymentType = PaymentType.Income;
   bool isDebt = false;
   final TextEditingController pocketNameController = TextEditingController();
+  List<PocketDataModel> pockets = [];
+  List<DropdownMenuItem<int>> pocketDropdownItems = [];
 
   Function()? onAddNewPayment;
 
   NewPaymentViewModel();
 
-  void init() {}
+  void init() {
+    loadDropdownItems();
+  }
 
   Future<void> addPayment(BuildContext context) async {
     final date = dateController.text.isNotEmpty
@@ -37,7 +43,7 @@ class NewPaymentViewModel {
         : 1000.0;
     final currency = selectedCurrency;
 
-    // Logika a kiválasztott dátum beállítására
+    // datumot allitja be
     await selectDate(context);
 
     final pocketId = await getOrCreatePocketId(pocketName);
@@ -102,7 +108,36 @@ class NewPaymentViewModel {
   }
 
   Future<int> getOrCreatePocketId(String pocketName) async {
-    // Zsebazonosító lekérdezése vagy létrehozása
-    return 1; // Példa érték, itt a valós logikát kell beilleszteni
+    final pocketRepo = PocketRepository();
+
+    // Ellenőrizze, hogy van-e már pénztárca a megadott névvel
+    final existingPocket = await pocketRepo.getPocketByName(pocketName);
+
+    if (existingPocket != null) {
+      // Ha már létezik a pénztárca, akkor adja vissza az azonosítóját
+      return existingPocket.id ?? 0;
+    } else {
+      // Ha még nem létezik a pénztárca, hozzon létre egy újat és adja vissza az azonosítóját
+      final newPocket = PocketDataModel(name: pocketName, special: false);
+      final newPocketId = await pocketRepo.insertPocket(newPocket);
+      return newPocketId;
+    }
+  }
+
+  Future<void> loadDropdownItems() async {
+    pockets = await () async {
+      final pocketDbHelper = PocketRepository();
+      final pocketList = await pocketDbHelper.getPocketList();
+      return pocketList.whereType<PocketDataModel>().toList();
+    }();
+
+    pocketDropdownItems = pockets
+        .map(
+          (pockets) => DropdownMenuItem<int>(
+            value: pockets.id,
+            child: Text(pockets.name),
+          ),
+        )
+        .toList();
   }
 }

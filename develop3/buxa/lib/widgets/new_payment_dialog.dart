@@ -21,7 +21,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
   @override
   void initState() {
     super.initState();
-
+    viewModel.init();
     Future.delayed(Duration.zero, () {
       _showNewPaymentDialog();
     });
@@ -74,9 +74,22 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                         Text('Tartozás'),
                       ],
                     ),
-                    TextField(
-                      controller: viewModel.pocketNameController,
-                      decoration: InputDecoration(labelText: 'Zseb név'),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextField(
+                            controller: viewModel.pocketNameController,
+                            decoration: InputDecoration(labelText: 'Zseb'),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            _showPocketList(
+                                context, viewModel.pocketNameController);
+                          },
+                          child: Icon(Icons.arrow_drop_down),
+                        ),
+                      ],
                     ),
                     TextField(
                       controller: viewModel.amountController,
@@ -130,6 +143,27 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showPocketList(BuildContext context, TextEditingController controller) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return ListView(
+          children: viewModel.pockets.map((person) {
+            return ListTile(
+              title: Text(person.name),
+              onTap: () {
+                setState(() {
+                  viewModel.pocketNameController.text = person.name;
+                });
+                Navigator.of(context).pop();
+              },
+            );
+          }).toList(),
         );
       },
     );
