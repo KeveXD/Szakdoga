@@ -1,5 +1,7 @@
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/widgets/datepicker_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/database/pocket_repository.dart';
@@ -20,14 +22,14 @@ class NewPaymentViewModel {
 
   Function()? onAddNewPayment;
 
-  NewPaymentViewModel();
+  NewPaymentViewModel({required this.onAddNewPayment});
 
   void init() {
     loadDropdownItems();
   }
 
-  Future<void> addPayment(
-      BuildContext context, VoidCallback onAddNewPayment) async {
+  Future<void> addPayment(BuildContext context) async {
+    /*
     final date = dateController.text.isNotEmpty
         ? DateTime.parse(dateController.text)
         : DateTime.now();
@@ -60,23 +62,38 @@ class NewPaymentViewModel {
       currency: currency,
     );
 
-    final dbHelper = PaymentRepository();
-
     try {
-      final id = await dbHelper.insertPayment(payment);
-      //Navigator.of(context).pop(); // Töltő ikon eltávolítása
+      if (kIsWeb) {
+        // Weben Firestore-ba töltjük fel az új befizetést
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          var firestore;
+          final firestoreInstance = firestore.FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          await firestoreInstance
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Payments')
+              .add(payment.toMap());
+        } else {
+          ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+        }
+      } else {
+        // Mobilalkalmazás esetén a helyi adatbázisba szúrjuk be az új befizetést
+        final dbHelper = PaymentRepository();
+        await dbHelper.insertPayment(payment);
+      }
+      onAddNewPayment();
       print("siker");
     } catch (error) {
-      // Navigator.of(context).pop(); // Töltő ikon eltávolítása
       ErrorDialog.show(context, 'Hiba történt a beszúrás közben: $error');
-    }
-    onAddNewPayment();
-    //Navigator.of(context).pop();
+    }*/
   }
 
   Future<void> selectDate(BuildContext context) async {
     // Dátumválasztó megjelenítése és kiválasztott dátum beállítása
-    DateTime? picked = await showDatePicker(
+    /* DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
@@ -85,31 +102,15 @@ class NewPaymentViewModel {
 
     if (picked != null && picked != DateTime.now()) {
       dateController.text = picked.toLocal().toString().split(' ')[0];
-    }
-  }
-
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Esetlegesen más input mezők...
-        DatePickerWidget(
-          label: 'Dátum',
-          date: DateTime.parse(dateController.text),
-          controller: dateController,
-          onDateSelected: (date) {
-            dateController.text = formatDate(date) ?? '';
-          },
-        ),
-      ],
-    );
+    }*/
   }
 
   String? formatDate(DateTime? date) {
-    return date?.toLocal().toString().split(' ')[0];
+    //return date?.toLocal().toString().split(' ')[0];
   }
 
   Future<int> getOrCreatePocketId(String pocketName) async {
-    final pocketRepo = PocketRepository();
+    /*final pocketRepo = PocketRepository();
 
     // Ellenőrizze, hogy van-e már pénztárca a megadott névvel
     final existingPocket = await pocketRepo.getPocketByName(pocketName);
@@ -122,11 +123,12 @@ class NewPaymentViewModel {
       final newPocket = PocketDataModel(name: pocketName, special: false);
       final newPocketId = await pocketRepo.insertPocket(newPocket);
       return newPocketId;
-    }
+    }*/
+    return 0;
   }
 
   Future<void> loadDropdownItems() async {
-    pockets = await () async {
+    /* pockets = await () async {
       final pocketDbHelper = PocketRepository();
       final pocketList = await pocketDbHelper.getPocketList();
       return pocketList.whereType<PocketDataModel>().toList();
@@ -140,5 +142,6 @@ class NewPaymentViewModel {
           ),
         )
         .toList();
+        */
   }
 }

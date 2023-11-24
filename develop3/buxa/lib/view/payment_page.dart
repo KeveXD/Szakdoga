@@ -108,7 +108,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       return NewPaymentDialog(
                         onAddNewPayment: () {
                           _refreshPayments();
-                          Navigator.of(context).pop();
+                          //Navigator.of(context).pop();
                         },
                       );
                     },

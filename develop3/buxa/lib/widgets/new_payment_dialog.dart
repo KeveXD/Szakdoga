@@ -1,6 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/viewmodel/new_payment_viewmodel.dart';
-import 'package:flutter/material.dart';
 
 class NewPaymentDialog extends StatefulWidget {
   final VoidCallback onAddNewPayment;
@@ -13,24 +13,31 @@ class NewPaymentDialog extends StatefulWidget {
 }
 
 class _NewPaymentDialogState extends State<NewPaymentDialog> {
-  final VoidCallback onAddNewPayment;
-  final NewPaymentViewModel viewModel = NewPaymentViewModel();
+  final NewPaymentViewModel viewModel;
 
-  _NewPaymentDialogState({required this.onAddNewPayment});
+  _NewPaymentDialogState({required VoidCallback onAddNewPayment})
+      : viewModel = NewPaymentViewModel(onAddNewPayment: onAddNewPayment);
 
   @override
-  void initState() {
-    super.initState();
-    viewModel.init();
-    Future.delayed(Duration.zero, () {
-      _showNewPaymentDialog();
-    });
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        _showNewPaymentDialog(context);
+      },
+      child: Text('Új fizetés'),
+    );
   }
 
-  void _showNewPaymentDialog() {
+  void _showNewPaymentDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        TextEditingController titleController = TextEditingController();
+        TextEditingController commentController = TextEditingController();
+        TextEditingController pocketNameController = TextEditingController();
+        TextEditingController amountController = TextEditingController();
+        TextEditingController dateController = TextEditingController();
+
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             // A StatefulBuilder használatával újraépíthetjük a dialógus ablakot
@@ -40,11 +47,11 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                 content: Column(
                   children: <Widget>[
                     TextField(
-                      controller: viewModel.titleController,
+                      controller: titleController,
                       decoration: InputDecoration(labelText: 'Cím'),
                     ),
                     TextField(
-                      controller: viewModel.commentController,
+                      controller: commentController,
                       decoration: InputDecoration(labelText: 'Megjegyzés'),
                     ),
                     DropdownButton<PaymentType>(
@@ -78,21 +85,20 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       children: <Widget>[
                         Expanded(
                           child: TextField(
-                            controller: viewModel.pocketNameController,
+                            controller: pocketNameController,
                             decoration: InputDecoration(labelText: 'Zseb'),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            _showPocketList(
-                                context, viewModel.pocketNameController);
+                            _showPocketList(context, pocketNameController);
                           },
                           child: Icon(Icons.arrow_drop_down),
                         ),
                       ],
                     ),
                     TextField(
-                      controller: viewModel.amountController,
+                      controller: amountController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(labelText: 'Összeg'),
                     ),
@@ -117,7 +123,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       },
                       child: IgnorePointer(
                         child: TextField(
-                          controller: viewModel.dateController,
+                          controller: dateController,
                           decoration: InputDecoration(labelText: 'Dátum'),
                         ),
                       ),
@@ -134,7 +140,9 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                   ElevatedButton(
                     child: Text('Hozzáad'),
                     onPressed: () {
-                      viewModel.addPayment(context, onAddNewPayment);
+                      viewModel.addPayment(
+                        context,
+                      );
                       widget.onAddNewPayment();
                       Navigator.of(context).pop();
                     },
@@ -149,7 +157,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
   }
 
   void _showPocketList(BuildContext context, TextEditingController controller) {
-    showModalBottomSheet(
+    /* showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return ListView(
@@ -158,7 +166,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
               title: Text(person.name),
               onTap: () {
                 setState(() {
-                  viewModel.pocketNameController.text = person.name;
+                  controller.text = person.name;
                 });
                 Navigator.of(context).pop();
               },
@@ -166,11 +174,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
           }).toList(),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
+    );*/
   }
 }
