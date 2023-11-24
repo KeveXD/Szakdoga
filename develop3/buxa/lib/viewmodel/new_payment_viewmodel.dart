@@ -1,5 +1,6 @@
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/widgets/datepicker_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,6 @@ class NewPaymentViewModel {
   }
 
   Future<void> addPayment(BuildContext context) async {
-    /*
     final date = dateController.text.isNotEmpty
         ? DateTime.parse(dateController.text)
         : DateTime.now();
@@ -49,7 +49,7 @@ class NewPaymentViewModel {
     // datumot allitja be
     await selectDate(context);
 
-    final pocketId = await getOrCreatePocketId(pocketName);
+    //final pocketId = await getOrCreatePocketId(pocketName);
 
     final payment = PaymentDataModel(
       date: date,
@@ -57,18 +57,17 @@ class NewPaymentViewModel {
       comment: comment,
       type: type,
       isDebt: isDebt,
-      pocketId: pocketId,
+      pocketId: 1000,
       amount: amount,
       currency: currency,
     );
 
     try {
       if (kIsWeb) {
-        // Weben Firestore-ba töltjük fel az új befizetést
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
           var firestore;
-          final firestoreInstance = firestore.FirebaseFirestore.instance;
+          final firestoreInstance = FirebaseFirestore.instance;
           final userEmail = user.email;
 
           await firestoreInstance
@@ -80,20 +79,18 @@ class NewPaymentViewModel {
           ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
         }
       } else {
-        // Mobilalkalmazás esetén a helyi adatbázisba szúrjuk be az új befizetést
         final dbHelper = PaymentRepository();
         await dbHelper.insertPayment(payment);
+        print("siker");
       }
-      onAddNewPayment();
-      print("siker");
     } catch (error) {
       ErrorDialog.show(context, 'Hiba történt a beszúrás közben: $error');
-    }*/
+    }
   }
 
   Future<void> selectDate(BuildContext context) async {
     // Dátumválasztó megjelenítése és kiválasztott dátum beállítása
-    /* DateTime? picked = await showDatePicker(
+    DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
@@ -102,15 +99,15 @@ class NewPaymentViewModel {
 
     if (picked != null && picked != DateTime.now()) {
       dateController.text = picked.toLocal().toString().split(' ')[0];
-    }*/
+    }
   }
 
   String? formatDate(DateTime? date) {
-    //return date?.toLocal().toString().split(' ')[0];
+    return date?.toLocal().toString().split(' ')[0];
   }
 
   Future<int> getOrCreatePocketId(String pocketName) async {
-    /*final pocketRepo = PocketRepository();
+    final pocketRepo = PocketRepository();
 
     // Ellenőrizze, hogy van-e már pénztárca a megadott névvel
     final existingPocket = await pocketRepo.getPocketByName(pocketName);
@@ -123,12 +120,12 @@ class NewPaymentViewModel {
       final newPocket = PocketDataModel(name: pocketName, special: false);
       final newPocketId = await pocketRepo.insertPocket(newPocket);
       return newPocketId;
-    }*/
+    }
     return 0;
   }
 
   Future<void> loadDropdownItems() async {
-    /* pockets = await () async {
+    pockets = await () async {
       final pocketDbHelper = PocketRepository();
       final pocketList = await pocketDbHelper.getPocketList();
       return pocketList.whereType<PocketDataModel>().toList();
@@ -142,6 +139,5 @@ class NewPaymentViewModel {
           ),
         )
         .toList();
-        */
   }
 }

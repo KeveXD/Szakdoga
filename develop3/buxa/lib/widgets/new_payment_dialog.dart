@@ -32,12 +32,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController titleController = TextEditingController();
-        TextEditingController commentController = TextEditingController();
-        TextEditingController pocketNameController = TextEditingController();
-        TextEditingController amountController = TextEditingController();
-        TextEditingController dateController = TextEditingController();
-
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             // A StatefulBuilder használatával újraépíthetjük a dialógus ablakot
@@ -47,11 +41,11 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                 content: Column(
                   children: <Widget>[
                     TextField(
-                      controller: titleController,
+                      controller: viewModel.titleController,
                       decoration: InputDecoration(labelText: 'Cím'),
                     ),
                     TextField(
-                      controller: commentController,
+                      controller: viewModel.commentController,
                       decoration: InputDecoration(labelText: 'Megjegyzés'),
                     ),
                     DropdownButton<PaymentType>(
@@ -85,20 +79,21 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       children: <Widget>[
                         Expanded(
                           child: TextField(
-                            controller: pocketNameController,
+                            controller: viewModel.pocketNameController,
                             decoration: InputDecoration(labelText: 'Zseb'),
                           ),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            _showPocketList(context, pocketNameController);
+                            _showPocketList(
+                                context, viewModel.pocketNameController);
                           },
                           child: Icon(Icons.arrow_drop_down),
                         ),
                       ],
                     ),
                     TextField(
-                      controller: amountController,
+                      controller: viewModel.amountController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(labelText: 'Összeg'),
                     ),
@@ -123,7 +118,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       },
                       child: IgnorePointer(
                         child: TextField(
-                          controller: dateController,
+                          controller: viewModel.dateController,
                           decoration: InputDecoration(labelText: 'Dátum'),
                         ),
                       ),
@@ -143,7 +138,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       viewModel.addPayment(
                         context,
                       );
-                      widget.onAddNewPayment();
+                      //widget.onAddNewPayment();
                       Navigator.of(context).pop();
                     },
                   ),
@@ -157,7 +152,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
   }
 
   void _showPocketList(BuildContext context, TextEditingController controller) {
-    /* showModalBottomSheet(
+    showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return ListView(
@@ -174,6 +169,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
           }).toList(),
         );
       },
-    );*/
+    );
   }
 }
