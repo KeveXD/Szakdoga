@@ -14,8 +14,9 @@ class NewPaymentDialog extends StatefulWidget {
 
 class _NewPaymentDialogState extends State<NewPaymentDialog> {
   final NewPaymentViewModel viewModel;
+  final VoidCallback onAddNewPayment;
 
-  _NewPaymentDialogState({required VoidCallback onAddNewPayment})
+  _NewPaymentDialogState({required this.onAddNewPayment})
       : viewModel = NewPaymentViewModel(onAddNewPayment: onAddNewPayment);
 
   @override
@@ -138,9 +139,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                   ElevatedButton(
                     child: Text('Hozzáad'),
                     onPressed: () {
-                      viewModel.addPayment(
-                        context,
-                      );
+                      viewModel.addPayment(context, onAddNewPayment);
                       //widget.onAddNewPayment();
                       Navigator.of(context).pop();
                     },

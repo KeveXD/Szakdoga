@@ -29,7 +29,8 @@ class NewPaymentViewModel {
     loadDropdownItems();
   }
 
-  Future<void> addPayment(BuildContext context) async {
+  Future<void> addPayment(
+      BuildContext context, VoidCallback onAddNewPayment) async {
     final date = dateController.text.isNotEmpty
         ? DateTime.parse(dateController.text)
         : DateTime.now();
@@ -88,6 +89,9 @@ class NewPaymentViewModel {
     } catch (error) {
       ErrorDialog.show(context, 'Hiba történt a beszúrás közben: $error');
     }
+
+    onAddNewPayment();
+    Navigator.of(context).pop();
   }
 
   Future<void> selectDate(BuildContext context) async {
