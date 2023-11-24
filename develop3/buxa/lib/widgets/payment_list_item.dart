@@ -78,7 +78,8 @@ class PaymentListItem extends StatelessWidget {
                   ),
                   if (onDetails != null)
                     IconButton(
-                      onPressed: onDetails,
+                      onPressed: () => viewModel.navigateToPaymentDetailsPage(
+                          context, payment),
                       icon: Icon(Icons.info),
                     ),
                 ],

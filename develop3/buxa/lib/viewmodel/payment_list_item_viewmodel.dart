@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:buxa/data_model/payment_data_model.dart';
+import 'package:buxa/view/payment_details_page.dart';
 import 'package:buxa/database/payment_repository.dart';
+import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:flutter/foundation.dart';
 
 class PaymentListItemViewModel {
@@ -41,5 +42,12 @@ class PaymentListItemViewModel {
     }
 
     return 0;
+  }
+
+  void navigateToPaymentDetailsPage(
+      BuildContext context, PaymentDataModel payment) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => PaymentDetailsPage(payment: payment),
+    ));
   }
 }

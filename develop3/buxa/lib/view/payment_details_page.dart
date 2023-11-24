@@ -4,7 +4,6 @@ import 'package:buxa/database/pocket_repository.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/view/edit_payment_page.dart';
-import 'package:buxa/widgets/new_payment_dialog.dart';
 
 class PaymentDetailsPage extends StatelessWidget {
   final PaymentDataModel payment;
