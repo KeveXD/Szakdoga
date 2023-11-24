@@ -4,6 +4,7 @@ import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/widgets/error_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PaymentModel {
@@ -11,32 +12,37 @@ class PaymentModel {
       BuildContext context, PocketDataModel pocket) async {
     List<PaymentDataModel> paymentsList = [];
 
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final firestore = FirebaseFirestore.instance;
-        final userEmail = user.email;
+    if (kIsWeb) {
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
 
-        final paymentsCollectionRef = firestore
-            .collection(userEmail!)
-            .doc('userData')
-            .collection('Payments');
+          final paymentsCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Payments');
 
-        final paymentsQuerySnapshot = await paymentsCollectionRef.get();
-        if (paymentsQuerySnapshot.docs.isNotEmpty) {
-          paymentsList = paymentsQuerySnapshot.docs
-              .map((doc) => PaymentDataModel.fromMap(doc.data()))
-              .toList();
+          final paymentsQuerySnapshot = await paymentsCollectionRef.get();
+          if (paymentsQuerySnapshot.docs.isNotEmpty) {
+            paymentsList = paymentsQuerySnapshot.docs
+                .map((doc) => PaymentDataModel.fromMap(doc.data()))
+                .toList();
+          } else {
+            ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+          }
         } else {
-          ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+          ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
         }
-      } else {
-        ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+      } catch (error) {
+        ErrorDialog.show(context, 'Hiba történt: $error');
+      } finally {
+        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
       }
-    } catch (error) {
-      ErrorDialog.show(context, 'Hiba történt: $error');
-    } finally {
-      //Navigator.of(context).pop(); // Töltő ikon eltávolítása
+    } else {
+      final repository = PaymentRepository();
+      paymentsList = await repository.getPaymentList();
     }
 
     if (!pocket.special) {

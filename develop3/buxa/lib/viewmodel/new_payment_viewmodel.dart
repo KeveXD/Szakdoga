@@ -50,10 +50,10 @@ class NewPaymentViewModel {
     await selectDate(context);
 
     //final pocketId = await getOrCreatePocketId(pocketName);
-
+    int paId = await generateUniqueId() ?? 0;
     int pID = await getOrCreatePocketId(pocketName) ?? 0;
     final payment = PaymentDataModel(
-      //id:
+      id: paId,
       date: date,
       title: title,
       comment: comment,
@@ -171,8 +171,10 @@ class NewPaymentViewModel {
       final firestore = FirebaseFirestore.instance;
       final userEmail = user.email;
 
-      final peopleCollectionRef =
-          firestore.collection(userEmail!).doc('userData').collection('Debts');
+      final peopleCollectionRef = firestore
+          .collection(userEmail!)
+          .doc('userData')
+          .collection('Payments');
       int uniqueId;
 
       // Keresd meg a legnagyobb id-t a Firestore-ban
