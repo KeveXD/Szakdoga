@@ -70,8 +70,9 @@ class PaymentListItem extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      viewModel.deletePayment(payment.id!);
-                      onDelete();
+                      viewModel.deletePayment(payment.id!).then((result) {
+                        onDelete();
+                      });
                     },
                     icon: Icon(Icons.delete),
                   ),
