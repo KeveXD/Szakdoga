@@ -20,12 +20,16 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        _showNewPaymentDialog(context);
-      },
-      child: Text('Új fizetés'),
-    );
+    return Container();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      //viewModel.loadDropdownItems();
+      _showNewPaymentDialog(context);
+    });
   }
 
   void _showNewPaymentDialog(BuildContext context) {
@@ -34,7 +38,6 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            // A StatefulBuilder használatával újraépíthetjük a dialógus ablakot
             return SingleChildScrollView(
               child: AlertDialog(
                 title: Text('Költség hozzáadása'),

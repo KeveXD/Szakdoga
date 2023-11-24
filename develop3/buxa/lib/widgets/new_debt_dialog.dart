@@ -12,7 +12,7 @@ class NewDebtDialog extends StatefulWidget {
 }
 
 class _NewDebtDialogState extends State<NewDebtDialog> {
-  final NewDebtDialogViewModel viewModel = NewDebtDialogViewModel();
+  final NewDebtViewModel viewModel = NewDebtViewModel();
   final VoidCallback onAddNewElement;
 
   _NewDebtDialogState({required this.onAddNewElement});

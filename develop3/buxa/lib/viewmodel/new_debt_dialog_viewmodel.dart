@@ -5,7 +5,7 @@ import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
 import 'package:buxa/widgets/error_dialog.dart';
 
-class NewDebtDialogViewModel {
+class NewDebtViewModel {
   final NewDebtDialogModel model = NewDebtDialogModel();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
