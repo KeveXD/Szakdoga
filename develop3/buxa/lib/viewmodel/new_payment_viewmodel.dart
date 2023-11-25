@@ -112,23 +112,6 @@ class NewPaymentViewModel {
     return date?.toLocal().toString().split(' ')[0];
   }
 
-  Future<void> loadDropdownItems() async {
-    pockets = await () async {
-      final pocketDbHelper = PocketRepository();
-      final pocketList = await pocketDbHelper.getPocketList();
-      return pocketList.whereType<PocketDataModel>().toList();
-    }();
-
-    pocketDropdownItems = pockets
-        .map(
-          (pockets) => DropdownMenuItem<int>(
-            value: pockets.id,
-            child: Text(pockets.name),
-          ),
-        )
-        .toList();
-  }
-
   Future<int?> getOrCreatePocketId(String pocketName) async {
     if (kIsWeb) {
       final user = FirebaseAuth.instance.currentUser;
@@ -215,5 +198,51 @@ class NewPaymentViewModel {
       return uniqueId;
     }
     return 0;
+  }
+
+  Future<void> loadDropdownItems() async {
+    pockets = await loadPockets();
+    print("loool");
+    pocketDropdownItems = pockets
+        .map(
+          (pocket) => DropdownMenuItem<int>(
+            value: pocket.id,
+            child: Text(pocket.name),
+          ),
+        )
+        .toList();
+  }
+
+  Future<List<PocketDataModel>> loadPockets() async {
+    if (!kIsWeb) {
+      final personDbHelper = PocketRepository();
+      final personList = await personDbHelper.getPocketList();
+      return personList.whereType<PocketDataModel>().toList();
+    } else {
+      List<PocketDataModel> pocketList = [];
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final firestore = FirebaseFirestore.instance;
+        final userEmail = user.email;
+
+        final pocketCollectionRef = firestore
+            .collection(userEmail!)
+            .doc('userData')
+            .collection('Pockets');
+
+        final peopleQuerySnapshot = await pocketCollectionRef.get();
+        if (peopleQuerySnapshot.docs.isNotEmpty) {
+          pocketList = peopleQuerySnapshot.docs
+              .map((doc) => PocketDataModel.fromMap(doc.data()))
+              .toList();
+          return pocketList;
+        } else {
+          //ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+        }
+      } else {
+        //ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+      }
+    }
+    return [];
   }
 }

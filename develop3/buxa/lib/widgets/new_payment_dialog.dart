@@ -28,7 +28,7 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      //viewModel.loadDropdownItems();
+      viewModel.loadDropdownItems();
       _showNewPaymentDialog(context);
     });
   }
@@ -158,12 +158,12 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
       context: context,
       builder: (BuildContext context) {
         return ListView(
-          children: viewModel.pockets.map((person) {
+          children: viewModel.pockets.map((pocket) {
             return ListTile(
-              title: Text(person.name),
+              title: Text(pocket.name),
               onTap: () {
                 setState(() {
-                  controller.text = person.name;
+                  controller.text = pocket.name;
                 });
                 Navigator.of(context).pop();
               },
