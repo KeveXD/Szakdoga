@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/data_model/pocket_data_model.dart';
+import 'package:buxa/viewmodel/payment_details_viewmodel.dart';
 
 import 'package:intl/intl.dart';
 //import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -44,7 +44,10 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
         text: DateFormat.yMMMd().format(widget.initialPayment.date));
     commentController =
         TextEditingController(text: widget.initialPayment.comment);
-    pocketNameController = TextEditingController(text: 'Pocket1');
+    PaymentDetailsPageViewModel vm =
+        PaymentDetailsPageViewModel(payment: widget.initialPayment);
+    //String pName = await vm.getPocketNameById(widget.initialPayment.id ?? -1);
+    pocketNameController = TextEditingController(text: "");
     selectedCurrency = widget.initialPayment.currency;
     selectedPaymentType = widget.initialPayment.type;
     isDebt = widget.initialPayment.isDebt;
