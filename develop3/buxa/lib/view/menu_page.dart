@@ -1,11 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:buxa/view/debt_page.dart';
-import 'package:buxa/view/pocket_page.dart';
-import 'package:buxa/view/query_page.dart';
+import 'package:buxa/viewmodel/menu_viewmodel.dart';
 
 class MenuPage extends StatelessWidget {
+  final MenuPageViewModel? viewModel = MenuPageViewModel();
+
   @override
   Widget build(BuildContext context) {
+    final isWeb = kIsWeb; // Ellenőrizd, hogy weben fut-e az alkalmazás
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF00008577),
@@ -52,9 +55,7 @@ class MenuPage extends StatelessWidget {
                         icon: Icons.query_builder,
                         label: 'Lekérdezések',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => QueryPage(),
-                          ));
+                          viewModel?.navigateToQueryPage(context);
                         },
                       ),
                     ),
@@ -68,48 +69,52 @@ class MenuPage extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CardWidget(
-                          icon: Icons.attach_money,
-                          label: 'Tartozások',
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => DebtPage(),
-                            ));
-                          }),
+                        icon: Icons.attach_money,
+                        label: 'Tartozások',
+                        onTap: () {
+                          viewModel?.navigateToDebtPage(context);
+                        },
+                      ),
                     ),
                     Expanded(
                       child: CardWidget(
                         icon: Icons.shopping_cart,
-                        label: 'Pénz áram',
+                        label: 'Költések',
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => PocketPage(),
-                          ));
+                          viewModel?.navigateToPocketPage(context);
                         },
                       ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                color: Color(0xFF232B59),
-                padding: EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: CardWidget(
-                        icon: Icons.cloud_upload,
-                        label: 'Feltöltés',
+              if (!isWeb) // Csak akkor jelenjenek meg a gombok, ha nem weben fut az alkalmazás
+                Container(
+                  color: Color(0xFF232B59),
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CardWidget(
+                          icon: Icons.cloud_upload,
+                          label: 'Feltöltés',
+                          onTap: () {
+                            viewModel?.upload(context);
+                          },
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: CardWidget(
-                        icon: Icons.cloud_download,
-                        label: 'Letöltés',
+                      Expanded(
+                        child: CardWidget(
+                          icon: Icons.cloud_download,
+                          label: 'Letöltés',
+                          onTap: () {
+                            viewModel?.download(context);
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),

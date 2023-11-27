@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "721978480828",
-    "project_id": "buxaflutter-58aca",
-    "storage_bucket": "buxaflutter-58aca.appspot.com"
+    "project_number": "875595350767",
+    "project_id": "buxaflutter2",
+    "storage_bucket": "buxaflutter2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:721978480828:android:f925a88add4741766658b9",
+        "mobilesdk_app_id": "1:875595350767:android:0886141ed06356e209d11a",
         "android_client_info": {
           "package_name": "com.example.buxa"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBB-DTWNja2Os08mO3DsWEMFetfYF9-ggY"
+          "current_key": "AIzaSyCtvsQFkRwAcoosODjgcVwtI4X-wiMRtO4"
         }
       ],
       "services": {

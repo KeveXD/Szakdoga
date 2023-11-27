@@ -1,3 +1,9 @@
+import 'package:buxa/data_model/pocket_data_model.dart';
+import 'package:buxa/viewmodel/payment_viewmodel.dart';
+import 'package:buxa/widgets/error_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/payment_list_item.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
@@ -9,11 +15,13 @@ class QueryService {
   DateTime? endDate;
   double? minAmount;
   double? maxAmount;
-  String? pocket;
+  String? pocketName;
   bool? isExpense;
   bool? isIncome;
   String? title;
   String? comment;
+
+  List<PaymentDataModel> paymentsList = [];
 
   Widget buildDatePicker({
     required BuildContext context,
@@ -88,28 +96,88 @@ class QueryService {
     return date?.toLocal().toString().split(' ')[0];
   }
 
-  //ide írhatod a függvényeket
-
   Future<List<PaymentDataModel>> loadFromDatabase() async {
-    final repository = PaymentRepository();
-    return repository.getPaymentList();
+    if (kIsWeb) {
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final paymentsCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Payments');
+
+          final paymentsQuerySnapshot = await paymentsCollectionRef.get();
+          if (paymentsQuerySnapshot.docs.isNotEmpty) {
+            paymentsList = paymentsQuerySnapshot.docs
+                .map((doc) => PaymentDataModel.fromMap(doc.data()))
+                .toList();
+          } else {
+            //ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+          }
+        } else {
+          //ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+        }
+      } catch (error) {
+        //ErrorDialog.show(context, 'Hiba történt: $error');
+      } finally {
+        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
+      }
+    } else {
+      final repository = PaymentRepository();
+      paymentsList = await repository.getPaymentList();
+    }
+
+    if (paymentsList.isEmpty) {
+      //ErrorDialog.show(context, 'Nincsenek adatok a helyi adatbázisban.');
+    }
+
+    return paymentsList;
   }
 
   Future<List<PaymentDataModel>> calculatePayments() async {
     final payments = await loadFromDatabase();
 
-    final pocketRepo = PocketRepository();
-    final pocketLocal =
-        pocket != null ? await pocketRepo.getPocketByName(pocket!) : null;
+    PocketDataModel? pocketPocket;
+
+    if (pocketName != null) {
+      if (kIsWeb) {
+        // Firebase-ről lekérés weben
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final personQuerySnapshot = await firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Pockets')
+              .where('name', isEqualTo: pocketName)
+              .get();
+
+          if (personQuerySnapshot.docs.isNotEmpty) {
+            final personDoc = personQuerySnapshot.docs.first;
+            pocketPocket = PocketDataModel.fromMap(personDoc.data()!);
+          }
+        }
+      } else {
+        // Lokális adatbázisból lekérés mobilalkalmazásban
+        final pocketRepo = PocketRepository();
+        pocketPocket = await pocketRepo.getPocketByName(pocketName!);
+      }
+    }
 
     final filteredPayments = payments.where((payment) {
+      // Dátum ellenőrzés
       if (startDate != null && payment.date.isBefore(startDate!)) {
         return false;
       }
       if (endDate != null && payment.date.isAfter(endDate!)) {
         return false;
       }
-
+      // Egyéb feltételek
       if (minAmount != null && payment.amount < minAmount!) {
         return false;
       }
@@ -129,8 +197,8 @@ class QueryService {
         }
       }
 
-      if (pocket != null && pocketLocal != null) {
-        if (payment.pocketId != pocketLocal.id) {
+      if (pocketName != null && pocketPocket != null) {
+        if (payment.pocketId != pocketPocket.id) {
           return false;
         }
       }
@@ -144,7 +212,6 @@ class QueryService {
           isIncome != (payment.type == PaymentType.Income)) {
         return false;
       }
-
       return true;
     }).toList();
 

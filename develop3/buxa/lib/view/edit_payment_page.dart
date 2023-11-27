@@ -1,9 +1,10 @@
+import 'package:buxa/viewmodel/edit_payment_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/data_model/pocket_data_model.dart';
-import 'package:buxa/model/new_payment_dialog_service.dart';
+import 'package:buxa/viewmodel/payment_details_viewmodel.dart';
+
 import 'package:intl/intl.dart';
 //import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -21,7 +22,7 @@ class EditPaymentPage extends StatefulWidget {
 }
 
 class _EditPaymentPageState extends State<EditPaymentPage> {
-  final NewPaymentDialogService service = NewPaymentDialogService();
+  final EditPaymentViewModel viewmodel = EditPaymentViewModel();
 
   late TextEditingController titleController;
   late TextEditingController amountController;
@@ -43,7 +44,10 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
         text: DateFormat.yMMMd().format(widget.initialPayment.date));
     commentController =
         TextEditingController(text: widget.initialPayment.comment);
-    pocketNameController = TextEditingController(text: 'Pocket1');
+    PaymentDetailsPageViewModel vm =
+        PaymentDetailsPageViewModel(payment: widget.initialPayment);
+    //String pName = await vm.getPocketNameById(widget.initialPayment.id ?? -1);
+    pocketNameController = TextEditingController(text: "");
     selectedCurrency = widget.initialPayment.currency;
     selectedPaymentType = widget.initialPayment.type;
     isDebt = widget.initialPayment.isDebt;
@@ -64,7 +68,8 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
         : 1000.0;
     final currency = selectedCurrency;
 
-    final pocketId = await service.getOrCreatePocketId(pocketName);
+    final pocketId = 101;
+    //await service.getOrCreatePocketId(pocketName);
 
     final updatedPayment = PaymentDataModel(
       id: widget.initialPayment.id,
@@ -79,12 +84,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
     );
 
     // Call the repository method to update the payment
-    PaymentRepository().updatePayment(updatedPayment).then((result) {
-      if (result > 0) {
-        widget.onAddNewPayment();
-      }
-    });
-    Navigator.of(context).pop();
+    viewmodel.updatePayment(updatedPayment);
   }
 
   @override
@@ -260,14 +260,14 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
             children: [
               TextButton(
                 style: TextButton.styleFrom(primary: Colors.red),
-                child: Text('Cancel', style: TextStyle(fontSize: 16)),
+                child: Text('Mégsem', style: TextStyle(fontSize: 16)),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(primary: Colors.green),
-                child: Text('Update', style: TextStyle(fontSize: 16)),
+                child: Text('Hozzáad', style: TextStyle(fontSize: 16)),
                 onPressed: _updatePayment,
               ),
             ],

@@ -7,20 +7,16 @@ import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/widgets/new_person_dialog.dart';
 import 'package:buxa/model/person_model.dart';
 
-class PersonPageViewModel {
+class PersonViewModel {
   final PersonModel _model = PersonModel();
 
   late Future<List<PersonDataModel>> peopleFuture;
 
-  PersonPageViewModel() {
-    peopleFuture = _model.loadPeople();
+  PersonViewModel(BuildContext context) {
+    loadPeople(context);
   }
 
-  Future<void> refreshPeople() async {
-    await _model.refreshPeople();
-  }
-
-  Future<void> loadPeople() async {
-    peopleFuture = _model.loadPeople();
+  Future<void> loadPeople(BuildContext context) async {
+    peopleFuture = _model.loadPeople(context);
   }
 }

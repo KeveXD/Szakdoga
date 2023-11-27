@@ -7,14 +7,14 @@ class NewPersonDialog extends StatefulWidget {
   NewPersonDialog({required this.onAddNewPerson});
 
   @override
-  _NewPersonDialogState createState() =>
-      _NewPersonDialogState(onAddNewPerson: onAddNewPerson);
+  NewPersonDialogState createState() =>
+      NewPersonDialogState(onAddNewPerson: onAddNewPerson);
 }
 
-class _NewPersonDialogState extends State<NewPersonDialog> {
+class NewPersonDialogState extends State<NewPersonDialog> {
   final NewPersonViewModel viewModel;
 
-  _NewPersonDialogState({required VoidCallback onAddNewPerson})
+  NewPersonDialogState({required VoidCallback onAddNewPerson})
       : viewModel = NewPersonViewModel(onAddNewPerson: onAddNewPerson);
 
   @override
@@ -22,7 +22,6 @@ class _NewPersonDialogState extends State<NewPersonDialog> {
     return Container();
   }
 
-  // Define _showNewPersonDialog here
   void _showNewPersonDialog() {
     showDialog(
       context: context,
@@ -78,8 +77,6 @@ class _NewPersonDialogState extends State<NewPersonDialog> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      _showNewPersonDialog();
-    });
+    _showNewPersonDialog();
   }
 }

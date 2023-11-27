@@ -13,10 +13,7 @@ class NewPocketViewModel {
     if (name.isEmpty) {
       ErrorDialog.show(context, 'A nevet kötelező megadni');
     } else {
-      final newPocket = PocketDataModel(name: name);
-
-      final id = await model.insertPocket(newPocket);
-      newPocket.id = id;
+      await model.insertPocket(name);
 
       onAddNewPocket();
 

@@ -16,7 +16,7 @@ class NewPersonViewModel {
   Future<void> addNewPerson(BuildContext context) async {
     final name = nameController.text;
     final email = emailController.text;
-    final result = await _model.insertPerson(name, email, hasRevolut);
+    final result = await _model.insertPerson(name, email, hasRevolut, context);
 
     if (result != null) {
       onAddNewPerson();

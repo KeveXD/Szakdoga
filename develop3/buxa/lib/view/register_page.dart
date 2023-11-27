@@ -73,10 +73,6 @@ class RegisterPage extends StatelessWidget {
                 child: const Text('Regisztráció'),
               ),
               const SizedBox(height: 12),
-              const CircularProgressIndicator(
-                // A láthatóság (visible vagy invisible) a szükséglet szerint változtatható.
-                strokeWidth: 3,
-              ),
             ],
           ),
         ),

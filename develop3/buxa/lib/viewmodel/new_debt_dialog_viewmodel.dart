@@ -3,10 +3,13 @@ import 'package:buxa/data_model/person_data_model.dart';
 import 'package:buxa/model/new_debt_dialog_model.dart';
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/debt_data_model.dart';
+import 'package:buxa/widgets/error_dialog.dart';
 
-class NewDebtDialogViewModel {
+class NewDebtViewModel {
   final NewDebtDialogModel model = NewDebtDialogModel();
   final TextEditingController amountController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController debtorNameController = TextEditingController();
   bool hasRevolut = false;
 
   List<DropdownMenuItem<int>> personDropdownItems = [];
@@ -25,10 +28,19 @@ class NewDebtDialogViewModel {
         .toList();
   }
 
-  Future<void> addNewDebt(BuildContext context, VoidCallback onAddNewElement,
-      String name, String debtorName) async {
-    final personToId = await model.insertPersonIfNeeded(name);
-    final debtorPersonId = await model.insertPersonIfNeeded(debtorName);
+  Future<void> addNewDebt(
+      BuildContext context, VoidCallback onAddNewElement) async {
+    if (nameController.text.isEmpty ||
+        debtorNameController.text.isEmpty ||
+        amountController.text.isEmpty) {
+      ErrorDialog.show(context, 'Az összes mező kitöltése kötelező.');
+      return;
+    }
+
+    final personToId =
+        await model.insertPersonIfNeeded(nameController.text, context);
+    final debtorPersonId =
+        await model.insertPersonIfNeeded(debtorNameController.text, context);
 
     final newDebt = DebtDataModel(
       debtorPersonId: debtorPersonId,

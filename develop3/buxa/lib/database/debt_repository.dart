@@ -79,6 +79,15 @@ class DebtRepository {
     );
   }
 
+  Future<void> deleteDebtById(int id) async {
+    final db = await database;
+    await db.delete(
+      tableName,
+      where: '$columnId = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<void> updateDebt(DebtDataModel debt) async {
     final db = await database;
     await db.update(

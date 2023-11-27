@@ -4,8 +4,6 @@ import 'package:buxa/widgets/new_pocket_dialog.dart';
 import 'package:buxa/viewmodel/pocket_viewmodel.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
 
-//fokusz nem jo
-
 class PocketPage extends StatefulWidget {
   @override
   _PocketPageState createState() => _PocketPageState();
@@ -21,12 +19,12 @@ class _PocketPageState extends State<PocketPage> {
   @override
   void initState() {
     super.initState();
-    _pocketsFuture = _viewModel.loadPockets();
+    _pocketsFuture = _viewModel.loadPockets(context);
     _refreshPockets();
   }
 
   void _refreshPockets() async {
-    await _viewModel.loadPockets();
+    await _viewModel.loadPockets(context);
     setState(() {
       _scaffoldFocus.requestFocus();
     });
@@ -50,7 +48,7 @@ class _PocketPageState extends State<PocketPage> {
             return PocketListItem(
               pocket: _viewModel.pockets[index],
               onDelete: () {
-                _viewModel.deletePocket(_viewModel.pockets[index]);
+                _viewModel.deletePocket(context, _viewModel.pockets[index]);
                 _refreshPockets();
               },
             );
@@ -64,7 +62,7 @@ class _PocketPageState extends State<PocketPage> {
             builder: (BuildContext context) {
               return NewPocketDialog(
                 onAddNewPocket: () {
-                  _viewModel.loadPockets();
+                  _viewModel.loadPockets(context);
                   _refreshPockets();
                   _scaffoldFocus.requestFocus();
                 },

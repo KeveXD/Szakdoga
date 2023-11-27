@@ -1,24 +1,61 @@
+import 'package:buxa/data_model/pocket_data_model.dart';
 import 'package:buxa/database/payment_repository.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
-import 'package:buxa/data_model/pocket_data_model.dart';
+import 'package:buxa/widgets/error_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
-class PaymentPageModel {
-  final PocketDataModel pocket;
+class PaymentModel {
+  Future<List<PaymentDataModel>> loadPayments(
+      BuildContext context, PocketDataModel pocket) async {
+    List<PaymentDataModel> paymentsList = [];
 
-  PaymentPageModel({required this.pocket});
+    if (kIsWeb) {
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
 
-  Future<List<PaymentDataModel>> loadPayments() async {
-    if (pocket.special) {
-      return PaymentRepository().getPaymentList();
+          final paymentsCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Payments');
+
+          final paymentsQuerySnapshot = await paymentsCollectionRef.get();
+          if (paymentsQuerySnapshot.docs.isNotEmpty) {
+            paymentsList = paymentsQuerySnapshot.docs
+                .map((doc) => PaymentDataModel.fromMap(doc.data()))
+                .toList();
+          } else {
+            ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+          }
+        } else {
+          ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+        }
+      } catch (error) {
+        ErrorDialog.show(context, 'Hiba történt: $error');
+      } finally {
+        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
+      }
     } else {
-      return PaymentRepository().getPaymentsByPocket(pocket.name);
+      final repository = PaymentRepository();
+      paymentsList = await repository.getPaymentList();
     }
-  }
 
-  // Implementálhatod további model funkciókat itt
+    if (!pocket.special) {
+      // Ha nem speciális a zseb, csak azokat a paymenteket listázzuk, amelyeknek a pocketName attribútuma megegyezik a pocket.name-al
+      paymentsList = paymentsList
+          .where((payment) => payment.pocketId == pocket.id)
+          .toList();
+    }
 
-  // Például egy új befizetés hozzáadása:
-  Future<void> addNewPayment(Map<String, dynamic> data) async {
-    // Implementálj hozzáadási logikát és hívás a repositoryban
+    if (paymentsList.isEmpty) {
+      // ErrorDialog.show(context, 'Nincsenek adatok a helyi adatbázisban.');
+    }
+
+    return paymentsList;
   }
 }

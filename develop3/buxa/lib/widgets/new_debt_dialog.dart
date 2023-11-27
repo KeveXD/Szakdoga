@@ -12,10 +12,8 @@ class NewDebtDialog extends StatefulWidget {
 }
 
 class _NewDebtDialogState extends State<NewDebtDialog> {
-  final NewDebtDialogViewModel viewModel = NewDebtDialogViewModel();
+  final NewDebtViewModel viewModel = NewDebtViewModel();
   final VoidCallback onAddNewElement;
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController debtorNameController = TextEditingController();
 
   _NewDebtDialogState({required this.onAddNewElement});
 
@@ -42,13 +40,13 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
-                        controller: nameController,
+                        controller: viewModel.nameController,
                         decoration: InputDecoration(labelText: 'Ki'),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _showPersonList(context, nameController);
+                        _showPersonList(context, viewModel.nameController);
                       },
                       child: Icon(Icons.arrow_drop_down),
                     ),
@@ -58,13 +56,14 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
                   children: <Widget>[
                     Expanded(
                       child: TextField(
-                        controller: debtorNameController,
+                        controller: viewModel.debtorNameController,
                         decoration: InputDecoration(labelText: 'Kinek'),
                       ),
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _showPersonList(context, debtorNameController);
+                        _showPersonList(
+                            context, viewModel.debtorNameController);
                       },
                       child: Icon(Icons.arrow_drop_down),
                     ),
@@ -104,8 +103,10 @@ class _NewDebtDialogState extends State<NewDebtDialog> {
             ElevatedButton(
               child: Text('Hozzáadás'),
               onPressed: () {
-                viewModel.addNewDebt(context, onAddNewElement,
-                    nameController.text, debtorNameController.text);
+                viewModel.addNewDebt(
+                  context,
+                  onAddNewElement,
+                );
               },
             ),
           ],

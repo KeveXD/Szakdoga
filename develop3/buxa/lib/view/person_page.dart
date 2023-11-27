@@ -12,12 +12,23 @@ class PersonPage extends StatefulWidget {
 }
 
 class _PersonPageState extends State<PersonPage> {
-  final PersonPageViewModel viewModel = PersonPageViewModel();
+  late Future<List<PersonDataModel>> _personFuture;
+  late PersonViewModel viewModel;
 
   @override
   void initState() {
     super.initState();
-    viewModel.loadPeople();
+    //_personFuture = viewModel.peopleFuture();
+    //_refreshPockets();
+    viewModel = PersonViewModel(context);
+    viewModel.loadPeople(context);
+  }
+
+  void _refreshPeople() {
+    setState(() {
+      //viewModel.refreshPeople(context);
+      viewModel.loadPeople(context);
+    });
   }
 
   @override
@@ -64,7 +75,7 @@ class _PersonPageState extends State<PersonPage> {
                       return PersonListItem(
                         person: person,
                         onDelete: () {
-                          viewModel.refreshPeople(); // Adatok újratöltése
+                          _refreshPeople();
                         },
                         onEdit: () {
                           // Handle edit action here
@@ -82,7 +93,18 @@ class _PersonPageState extends State<PersonPage> {
                 color: Color.fromARGB(255, 158, 202, 62),
                 icon: Icons.menu,
                 title: 'Menü',
-                function: () {},
+                function: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+              CustomButtonModel(
+                color: Color.fromARGB(255, 158, 202, 62),
+                icon: Icons.arrow_back,
+                title: 'Tartozások',
+                function: () {
+                  Navigator.pop(context);
+                },
               ),
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
@@ -94,12 +116,14 @@ class _PersonPageState extends State<PersonPage> {
                     builder: (BuildContext context) {
                       return NewPersonDialog(
                         onAddNewPerson: () {
-                          viewModel.refreshPeople();
-                          Navigator.of(context).pop();
+                          _refreshPeople();
+                          //Navigator.of(context).pop();
                         },
                       );
                     },
                   );
+
+                  //itt nem újulnak meg a listItemek
                 },
               ),
             ],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
+import 'package:buxa/viewmodel/person_list_item_viewmodel.dart';
 
 class PersonListItem extends StatelessWidget {
   final PersonDataModel person;
+  final PersonListItemViewModel viewModel = PersonListItemViewModel();
   final VoidCallback onDelete;
   final VoidCallback onEdit;
 
@@ -81,17 +82,14 @@ class PersonListItem extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () {
-                    final dbHelper = PersonRepository();
-                    final idToDelete = person.id;
-
-                    dbHelper.deletePerson(idToDelete ?? -1).then((result) {
-                      if (result > 0) {
-                        onDelete();
-                      }
+                    viewModel
+                        .deletePerson(person.id ?? -1, person.name)
+                        .then((result) {
+                      onDelete();
                     });
                   },
                   icon: Icon(Icons.delete),
-                )
+                ),
               ],
             ),
           ],

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
-import 'package:buxa/database/pocket_repository.dart';
-import 'package:buxa/data_model/custom_button_data_model.dart';
 import 'package:buxa/widgets/desk.dart';
-import 'package:buxa/view/edit_payment_page.dart';
-import 'package:buxa/widgets/new_payment_dialog.dart';
+import 'package:buxa/viewmodel/payment_details_viewmodel.dart';
+import 'package:buxa/data_model/custom_button_data_model.dart';
 
 class PaymentDetailsPage extends StatelessWidget {
-  final PaymentDataModel payment;
+  final PaymentDetailsPageViewModel viewModel;
 
-  PaymentDetailsPage({required this.payment});
+  PaymentDetailsPage({required PaymentDataModel payment})
+      : viewModel = PaymentDetailsPageViewModel(payment: payment);
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +34,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        '${payment.date.toLocal()}',
+                        '${viewModel.payment.date.toLocal()}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -48,7 +47,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        payment.title,
+                        viewModel.payment.title,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -61,7 +60,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        payment.comment,
+                        viewModel.payment.comment,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -74,7 +73,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        payment.type == PaymentType.Income
+                        viewModel.payment.type == PaymentType.Income
                             ? 'Bevétel'
                             : 'Kiadás',
                         style: TextStyle(fontSize: 16),
@@ -89,7 +88,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        '${payment.amount} ${payment.currency}',
+                        '${viewModel.payment.amount} ${viewModel.payment.currency}',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -102,7 +101,8 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: FutureBuilder<String>(
-                        future: getPocketNameById(payment.pocketId),
+                        future: viewModel
+                            .getPocketNameById(viewModel.payment.pocketId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -130,7 +130,7 @@ class PaymentDetailsPage extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        payment.isDebt ? 'Igen' : 'Nem',
+                        viewModel.payment.isDebt ? 'Igen' : 'Nem',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -146,7 +146,7 @@ class PaymentDetailsPage extends StatelessWidget {
                 icon: Icons.menu,
                 title: 'Vissza',
                 function: () {
-                  Navigator.pop(context);
+                  viewModel.navigateBack(context);
                 },
               ),
               CustomButtonModel(
@@ -154,8 +154,7 @@ class PaymentDetailsPage extends StatelessWidget {
                 icon: Icons.edit,
                 title: 'Szerkesztés',
                 function: () {
-                  // Itt hozzuk létre és jelenítjük meg az új fizetés szerkesztő dialógust.
-                  _showEditPaymentDialog(context, payment);
+                  viewModel.showEditPaymentDialog(context);
                 },
               ),
             ],
@@ -163,25 +162,5 @@ class PaymentDetailsPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  void _showEditPaymentDialog(BuildContext context, PaymentDataModel payment) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return EditPaymentPage(
-          onAddNewPayment: () {
-            // Itt tudsz valamit tenni, ha a dialógus bezárásakor frissíteni kell az adatokat.
-          },
-          initialPayment: payment,
-        );
-      },
-    );
-  }
-
-  Future<String> getPocketNameById(int id) async {
-    final pocketRepo = PocketRepository();
-    final pocket = await pocketRepo.getPocketById(id);
-    return pocket?.name ?? 'No Pocket Found';
   }
 }

@@ -11,7 +11,7 @@ class PocketDataModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id ?? 0,
       'name': name,
       'special': special,
     };

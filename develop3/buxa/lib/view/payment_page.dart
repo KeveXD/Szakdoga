@@ -3,6 +3,7 @@ import 'package:buxa/widgets/new_payment_dialog.dart';
 import 'package:buxa/widgets/payment_list_item.dart';
 import 'package:buxa/widgets/desk.dart';
 import 'package:buxa/database/payment_repository.dart';
+import 'package:buxa/viewmodel/payment_viewmodel.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/data_model/custom_button_data_model.dart';
 import 'package:buxa/view/payment_details_page.dart';
@@ -18,6 +19,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  late PaymentViewModel viewModel;
   final PocketDataModel pocket;
   late Future<List<PaymentDataModel>> _paymentsFuture;
   List<PaymentDataModel> payments = [];
@@ -35,24 +37,15 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   void initState() {
     super.initState();
-    if (pocket.special) {
-      // Ha a zseb special, akkor az összes paymentet jelenítse meg
-      _paymentsFuture = PaymentRepository().getPaymentList();
-    } else {
-      // Különben csak az adott zsebhez tartozó paymentek
-      _paymentsFuture = PaymentRepository().getPaymentsByPocket(pocket.name);
-    }
+    viewModel = PaymentViewModel(context);
+    viewModel.loadPayments(context, pocket);
+    _paymentsFuture = viewModel.paymentsFuture;
   }
 
   void _refreshPayments() {
     setState(() {
-      if (pocket.special) {
-        // Ha a zseb special, akkor az összes paymentet jelenítse meg
-        _paymentsFuture = PaymentRepository().getPaymentList();
-      } else {
-        // Különben csak az adott zsebhez tartozó paymentek
-        _paymentsFuture = PaymentRepository().getPaymentsByPocket(pocket.name);
-      }
+      viewModel.loadPayments(context, pocket);
+      _paymentsFuture = viewModel.paymentsFuture;
     });
   }
 
@@ -106,10 +99,19 @@ class _PaymentPageState extends State<PaymentPage> {
             buttons: [
               CustomButtonModel(
                 color: Color.fromARGB(255, 158, 202, 62),
-                icon: Icons.share,
-                title: 'Szétosztás',
+                icon: Icons.menu,
+                title: 'Menü',
                 function: () {
-                  // Szétosztás logika
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+              CustomButtonModel(
+                color: Color.fromARGB(255, 158, 202, 62),
+                icon: Icons.wallet,
+                title: 'Zsebek',
+                function: () {
+                  Navigator.pop(context);
                 },
               ),
               CustomButtonModel(
@@ -122,9 +124,8 @@ class _PaymentPageState extends State<PaymentPage> {
                     builder: (BuildContext context) {
                       return NewPaymentDialog(
                         onAddNewPayment: () {
-                          // Add a new payment using the provided data
                           _refreshPayments();
-                          Navigator.of(context).pop();
+                          //Navigator.of(context).pop();
                         },
                       );
                     },

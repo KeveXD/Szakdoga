@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
 import 'package:buxa/database/payment_repository.dart';
+import 'package:buxa/viewmodel/payment_list_item_viewmodel.dart';
 
 class PaymentListItem extends StatelessWidget {
   final PaymentDataModel payment;
   final VoidCallback onDelete;
   final VoidCallback onEdit;
   final VoidCallback? onDetails;
+  final PaymentListItemViewModel viewModel = PaymentListItemViewModel();
 
   PaymentListItem({
     required this.payment,
     required this.onDelete,
     required this.onEdit,
-    this.onDetails, // Opcionális paraméter
+    this.onDetails,
   });
 
   @override
@@ -26,14 +28,14 @@ class PaymentListItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start, // Balra igazítás
-        crossAxisAlignment: CrossAxisAlignment.center, // Középre igazítás
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                payment.type == PaymentType.Expense ? 'Expense' : 'Income',
+                isExpense ? 'Expense' : 'Income',
                 style: TextStyle(
                   fontSize: 16,
                   color: color,
@@ -45,11 +47,11 @@ class PaymentListItem extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
-                softWrap: true, // Engedje a szöveg tördelését
+                softWrap: true,
               ),
             ],
           ),
-          Spacer(), // Tartalom jobbra igazítása
+          Spacer(),
           Column(
             children: [
               Text(
@@ -68,15 +70,16 @@ class PaymentListItem extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () {
-                      PaymentRepository().deletePayment(payment.id!);
-                      onDelete();
+                      viewModel.deletePayment(payment.id!).then((result) {
+                        onDelete();
+                      });
                     },
                     icon: Icon(Icons.delete),
                   ),
-                  if (onDetails !=
-                      null) // Ellenőrizze az onDetails callback létezését
+                  if (onDetails != null)
                     IconButton(
-                      onPressed: onDetails,
+                      onPressed: () => viewModel.navigateToPaymentDetailsPage(
+                          context, payment),
                       icon: Icon(Icons.info),
                     ),
                 ],
