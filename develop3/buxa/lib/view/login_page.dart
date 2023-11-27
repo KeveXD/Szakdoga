@@ -60,7 +60,6 @@ class LoginPage extends StatelessWidget {
                   fillColor: const Color(0xFFB9F3EC),
                   contentPadding: const EdgeInsets.all(12),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -74,7 +73,6 @@ class LoginPage extends StatelessWidget {
                   fillColor: const Color(0xFFB9F3EC),
                   contentPadding: const EdgeInsets.all(12),
                   border: OutlineInputBorder(
-                    //borderSide: BorderSide none,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -116,11 +114,6 @@ class LoginPage extends StatelessWidget {
                     color: const Color(0xFF4E3432),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              const CircularProgressIndicator(
-                // A láthatóság (visible vagy invisible) a szükséglet szerint változtatható.
-                strokeWidth: 3,
               ),
             ],
           ),

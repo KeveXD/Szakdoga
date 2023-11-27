@@ -7,10 +7,6 @@ import 'package:buxa/database/debt_repository.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //adatbazis inicializalasa
-  //final dbHelper = DatabaseHelper();
-  //await dbHelper.initializeDatabase();
-
   //webhez kel
   if (kIsWeb) {
     await Firebase.initializeApp(
