@@ -2,7 +2,6 @@ import 'package:buxa/model/query_service.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/payment_list_item.dart';
 import 'package:buxa/data_model/payment_data_model.dart';
-import 'package:buxa/database/payment_repository.dart';
 
 class QueryDetailsPage extends StatefulWidget {
   final QueryService queryService;
@@ -22,9 +21,7 @@ class _QueryDetailsPageState extends State<QueryDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _debtsFuture = widget.queryService.loadFromDatabase().then((_) {
-      return widget.queryService.calculatePayments();
-    });
+    _debtsFuture = widget.queryService.calculatePayments();
   }
 
   void _refreshPayments() {

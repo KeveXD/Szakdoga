@@ -11,8 +11,6 @@ class QueryPage extends StatefulWidget {
 }
 
 class _QueryPageState extends State<QueryPage> {
-  DateTime? _startDate;
-  DateTime? _endDate;
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final TextEditingController _minAmountController = TextEditingController();
@@ -21,9 +19,12 @@ class _QueryPageState extends State<QueryPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
 
-  String _selectedPocket = "";
   bool _isExpenseSelected = false;
   bool _isIncomeSelected = false;
+
+  DateTime? _startDate;
+  DateTime? _endDate;
+
   final QueryService _queryService = QueryService();
 
   @override
@@ -238,7 +239,7 @@ class _QueryPageState extends State<QueryPage> {
                       double.tryParse(_minAmountController.text);
                   _queryService.maxAmount =
                       double.tryParse(_maxAmountController.text);
-                  _queryService.pocket = _pocketController.text;
+                  _queryService.pocketName = _pocketController.text;
                   _queryService.isExpense = _isExpenseSelected;
                   _queryService.isIncome = _isIncomeSelected;
                   _queryService.title = _titleController.text;
@@ -267,7 +268,8 @@ class _QueryPageState extends State<QueryPage> {
 
   void _showPocketList(
       BuildContext context, TextEditingController controller) async {
-    List<String> pocketNames = await _getPocketNamesFromDatabase();
+    List<String> pocketNames = [];
+    // await _getPocketNamesFromDatabase();
 
     showModalBottomSheet(
       context: context,
