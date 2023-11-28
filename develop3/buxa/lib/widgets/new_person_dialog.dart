@@ -77,6 +77,9 @@ class NewPersonDialogState extends State<NewPersonDialog> {
   @override
   void initState() {
     super.initState();
-    _showNewPersonDialog();
+
+    Future.delayed(Duration.zero, () {
+      _showNewPersonDialog();
+    });
   }
 }
