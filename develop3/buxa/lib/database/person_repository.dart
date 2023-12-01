@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:buxa/data_model/person_data_model.dart';
@@ -106,5 +109,44 @@ class PersonRepository {
     } else {
       return null;
     }
+  }
+  //uuujjaaaaaaaak
+
+  Future<List<PersonDataModel>> loadPersons() async {
+    try {
+      if (!kIsWeb) {
+        final personList = await getPersonList();
+        return personList.whereType<PersonDataModel>().toList();
+      } else {
+        List<PersonDataModel> peopleList = [];
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef.get();
+          if (peopleQuerySnapshot.docs.isNotEmpty) {
+            peopleList = await Future.wait(peopleQuerySnapshot.docs.map(
+              (doc) async => PersonDataModel.fromMap(doc.data()),
+            ));
+            return peopleList;
+          } else {
+            //ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
+          }
+        } else {
+          //ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
+        }
+      }
+    } catch (e, stackTrace) {
+      print('Hiba a loadPersons függvényben: $e');
+      print(stackTrace);
+    }
+
+    return [];
   }
 }

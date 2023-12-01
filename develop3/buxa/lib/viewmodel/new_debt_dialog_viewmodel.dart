@@ -16,7 +16,8 @@ class NewDebtViewModel {
   List<PersonDataModel> persons = [];
 
   Future<void> loadDropdownItems() async {
-    persons = await model.loadPersons();
+    final personDbHelper = PersonRepository();
+    persons = await personDbHelper.loadPersons();
 
     personDropdownItems = persons
         .map(

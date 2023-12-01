@@ -85,39 +85,6 @@ class NewDebtDialogModel {
     }
   }
 
-  Future<List<PersonDataModel>> loadPersons() async {
-    if (!kIsWeb) {
-      final personDbHelper = PersonRepository();
-      final personList = await personDbHelper.getPersonList();
-      return personList.whereType<PersonDataModel>().toList();
-    } else {
-      List<PersonDataModel> peopleList = [];
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        final firestore = FirebaseFirestore.instance;
-        final userEmail = user.email;
-
-        final peopleCollectionRef = firestore
-            .collection(userEmail!)
-            .doc('userData')
-            .collection('People');
-
-        final peopleQuerySnapshot = await peopleCollectionRef.get();
-        if (peopleQuerySnapshot.docs.isNotEmpty) {
-          peopleList = peopleQuerySnapshot.docs
-              .map((doc) => PersonDataModel.fromMap(doc.data()))
-              .toList();
-          return peopleList;
-        } else {
-          //ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
-        }
-      } else {
-        //ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
-      }
-    }
-    return [];
-  }
-
   Future<PersonDataModel?> getPersonByNameWeb(String name) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {

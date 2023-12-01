@@ -23,10 +23,10 @@ class NewPersonModel {
               .collection('People');
 
           // Generálj egy egyedi id-t
-          final newPersonId = await generateUniqueId();
+          //final newPersonId = await generateUniqueId();
 
           final newPerson = PersonDataModel(
-            id: newPersonId,
+            id: 44,
             name: name,
             email: email,
             hasRevolut: hasRevolut,
@@ -91,48 +91,21 @@ class NewPersonModel {
   }
 
   Future<int> generateUniqueId() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final firestore = FirebaseFirestore.instance;
-      final userEmail = user.email;
+    List<PersonDataModel> persons = [];
+    final personDbHelper = PersonRepository();
+    persons = await personDbHelper.loadPersons();
 
-      final peopleCollectionRef =
-          firestore.collection(userEmail!).doc('userData').collection('People');
-      int uniqueId;
-
-      // Keresd meg a legnagyobb id-t a Firestore-ban
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await peopleCollectionRef
-              .orderBy('id', descending: true)
-              .limit(1)
-              .get();
-
-      // Ha vannak dokumentumok, használd azokat, különben kezdd az id-t 1-től
-      if (querySnapshot.docs.isNotEmpty) {
-        final int highestId = querySnapshot.docs.first['id'];
-        uniqueId = highestId + 1;
-      } else {
-        // Ha nincsenek dokumentumok, kezd el az id-t 1-től
-        uniqueId = 1;
+    // Keresd meg a legnagyobb id-t a persons listában
+    int? highestId = 0;
+    for (final person in persons) {
+      if (person.id! > highestId!) {
+        highestId = person.id;
       }
-
-      // Ellenőrizd, hogy az újonnan generált id még nincs használatban
-      bool idExists;
-
-      do {
-        final snapshot =
-            await peopleCollectionRef.where('id', isEqualTo: uniqueId).get();
-
-        idExists = snapshot.docs.isNotEmpty;
-
-        // Ha az id már létezik, növeld meg és ellenőrizd újra
-        if (idExists) {
-          uniqueId++;
-        }
-      } while (idExists);
-
-      return uniqueId;
     }
-    return 0;
+
+    // Az új id érték a legnagyobb id-hez + 1
+    int newId = highestId! + 1;
+
+    return newId;
   }
 }
