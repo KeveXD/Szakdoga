@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // Hozzáadva a BuildContext és a Navigator importálásához
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:buxa/model/login_model.dart';
@@ -16,6 +17,7 @@ class LoginViewModel {
     final user = await _model.loginFirebase(email, password);
 
     if (user != null) {
+      clearAllRepositoryData();
       // Sikeres bejelentkezés esetén továbbnavigáljuk a MenuPage-re.
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => MenuPage()));
@@ -24,5 +26,9 @@ class LoginViewModel {
 
       ErrorDialog.show(context, 'Hibás email vagy jelszó.');
     }
+  }
+
+  Future<void> clearAllRepositoryData() async {
+    if (!kIsWeb) await _model.clearAllRepositoryData();
   }
 }

@@ -95,13 +95,11 @@ class DebtDetailsModel {
       }
     });
 
-    int a = 0;
     while (debtsMap.values.any((value) => value != 0)) {
       debtorWithSmallestDebt = '';
       debtorWithLargestDebt = '';
       smallestDebt = 0;
       largestDebt = 0;
-      a++;
 
       debtsMap.forEach((debtor, amount) {
         if (amount > largestDebt) {

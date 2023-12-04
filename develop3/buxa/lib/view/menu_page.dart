@@ -79,7 +79,7 @@ class MenuPage extends StatelessWidget {
                     Expanded(
                       child: CardWidget(
                         icon: Icons.shopping_cart,
-                        label: 'Költések',
+                        label: 'Fizetések',
                         onTap: () {
                           viewModel?.navigateToPocketPage(context);
                         },
