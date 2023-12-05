@@ -33,7 +33,7 @@ class NewPersonModel {
         Navigator.of(context).pop(); // Töltő ikon eltávolítása
         return true;
       } catch (error) {
-        Navigator.of(context).pop(); // Töltő ikon eltávolítása
+        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
         ErrorDialog.show(context, 'Hiba történt a beszúrás közben: $error');
         return false;
       }
