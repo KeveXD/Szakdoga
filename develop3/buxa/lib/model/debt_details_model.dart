@@ -42,6 +42,7 @@ class DebtDetailsModel {
       }
     } else {
       // Mobil platformon használjuk a DebtRepository-t
+
       final debtDbHelper = DebtRepository();
       allDebts = await debtDbHelper.getDebtList();
     }
@@ -119,12 +120,15 @@ class DebtDetailsModel {
         debtsMap[debtorWithLargestDebt] =
             (debtsMap[debtorWithLargestDebt] ?? 0) - largestDebt;
 
-        final debtorPerson =
-            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
-        final personTo =
-            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
+        final debtorPerson = kIsWeb
+            ? await getPersonByNameWeb(debtorWithLargestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+        final personTo = kIsWeb
+            ? await getPersonByNameWeb(debtorWithSmallestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
 
         if (debtorPerson != null && personTo != null) {
+          print("looool");
           resultDebts.add(DebtDataModel(
             debtorPersonId: debtorPerson.id,
             personToId: personTo.id,
@@ -138,10 +142,12 @@ class DebtDetailsModel {
         debtsMap[debtorWithSmallestDebt] =
             (debtsMap[debtorWithSmallestDebt] ?? 0) - smallestDebt;
 
-        final debtorPerson =
-            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
-        final personTo =
-            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
+        final debtorPerson = kIsWeb
+            ? await getPersonByNameWeb(debtorWithLargestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+        final personTo = kIsWeb
+            ? await getPersonByNameWeb(debtorWithSmallestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
