@@ -7,58 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:buxa/widgets/error_dialog.dart';
 
 class NewPersonModel {
-  Future<bool?> insertPerson(String name, String email, bool hasRevolut,
-      BuildContext context, int id) async {
+  Future<bool?> insertPerson(
+      String name, String email, bool hasRevolut, BuildContext context) async {
     if (kIsWeb) {
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          final firestore = FirebaseFirestore.instance;
-          final userEmail = user.email;
-
-          final peopleCollectionRef = firestore
-              .collection(userEmail!)
-              .doc('userData')
-              .collection('People');
-
-          // Generálj egy egyedi id-t
-          //final newPersonId = await generateUniqueId();
-
-          final newPerson = PersonDataModel(
-            id: id,
-            name: name,
-            email: email,
-            hasRevolut: hasRevolut,
-          );
-
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          );
-
-          try {
-            // Tranzakció a dokumentum hozzáadásához az egyedi id-vel
-            await peopleCollectionRef.add(newPerson.toMap());
-
-            Navigator.of(context).pop(); // Töltő ikon eltávolítása
-            return true;
-          } catch (error) {
-            Navigator.of(context).pop(); // Töltő ikon eltávolítása
-            ErrorDialog.show(context,
-                'Hiba történt a Firestore-ba való beszúrás közben: $error');
-            return false;
-          }
-        }
-      } catch (error) {
-        Navigator.of(context).pop(); // Töltő ikon eltávolítása
-        ErrorDialog.show(context, 'Hiba történt: $error');
-        return false;
-      }
     } else {
       // Mobil platformon használjuk a PersonRepository-t
       final dbHelper = PersonRepository();

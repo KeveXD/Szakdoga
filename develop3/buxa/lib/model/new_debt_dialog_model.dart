@@ -1,6 +1,7 @@
 import 'package:buxa/database/person_repository.dart';
 import 'package:buxa/database/debt_repository.dart';
 import 'package:buxa/data_model/person_data_model.dart';
+import 'package:buxa/viewmodel/new_person_viewmodel.dart';
 import 'package:buxa/widgets/error_dialog.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,53 +12,27 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NewDebtDialogModel {
   Future<int?> insertPersonIfNeeded(String name, BuildContext context) async {
-    if (!kIsWeb) {
-      final personDbHelper = PersonRepository();
-      final existingPerson = await personDbHelper.getPersonByName(name);
-      if (existingPerson != null) {
-        return existingPerson.id;
+    try {
+      final NewPersonModel _model = NewPersonModel();
+      final NewPersonViewModel viewmodel =
+          NewPersonViewModel(onAddNewPerson: () {});
+
+      if (kIsWeb) {
+        final id = await viewmodel.generateUniqueId();
+        viewmodel.addNewPersonToFirebase(context, name, id);
+        return id;
       } else {
-        final newPerson = PersonDataModel(name: name);
-        final newPersonId = await personDbHelper.insertPerson(newPerson);
-        return newPersonId;
+        await _model.insertPerson(name, "pelda@gmail.com", false, context);
+        PersonRepository pr = new PersonRepository();
+        Future<PersonDataModel?> person = pr.getPersonByName(name);
+        return 0; //person.id;
       }
-    } else {
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          final firestore = FirebaseFirestore.instance;
-          final userEmail = user.email;
-
-          final existingPerson = await getPersonByNameWeb(name);
-          if (existingPerson != null) {
-            return existingPerson.id;
-          } else {
-            final peopleCollectionRef = firestore
-                .collection(userEmail!)
-                .doc('userData')
-                .collection('People');
-
-            try {
-              final NewPersonModel _model = NewPersonModel();
-              final result = await _model.insertPerson(
-                  name, "looool@gmail.com", false, context, 77);
-
-              final newPerson2 = await getPersonByNameWeb(name);
-
-              return newPerson2?.id;
-            } catch (error) {
-              print('Hiba történt a Firestore-ba való beszúrás közben: $error');
-              return null;
-            }
-
-            //return int.tryParse(newPersonDocRef.id);
-          }
-        }
-      } catch (e) {
-        print('Hiba történt a személy hozzáadása közben: $e');
-        return null;
-      }
+    } catch (error) {
+      print('Hiba történt a Firestore-ba való beszúrás közben: $error');
+      return 0;
     }
+
+    //return int.tryParse(newPersonDocRef.id);
   }
 
   Future<void> insertDebt(DebtDataModel newDebt) async {
