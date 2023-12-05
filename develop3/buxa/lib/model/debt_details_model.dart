@@ -128,7 +128,6 @@ class DebtDetailsModel {
             : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
 
         if (debtorPerson != null && personTo != null) {
-          print("looool");
           resultDebts.add(DebtDataModel(
             debtorPersonId: debtorPerson.id,
             personToId: personTo.id,

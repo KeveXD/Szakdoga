@@ -5,11 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:buxa/widgets/error_dialog.dart';
-import 'dart:math';
 
 class NewPersonModel {
-  Future<bool?> insertPerson(
-      String name, String email, bool hasRevolut, BuildContext context) async {
+  Future<bool?> insertPerson(String name, String email, bool hasRevolut,
+      BuildContext context, int id) async {
     if (kIsWeb) {
       try {
         final user = FirebaseAuth.instance.currentUser;
@@ -26,7 +25,7 @@ class NewPersonModel {
           //final newPersonId = await generateUniqueId();
 
           final newPerson = PersonDataModel(
-            id: 44,
+            id: id,
             name: name,
             email: email,
             hasRevolut: hasRevolut,
@@ -44,7 +43,7 @@ class NewPersonModel {
 
           try {
             // Tranzakció a dokumentum hozzáadásához az egyedi id-vel
-            final docRef = await peopleCollectionRef.add(newPerson.toMap());
+            await peopleCollectionRef.add(newPerson.toMap());
 
             Navigator.of(context).pop(); // Töltő ikon eltávolítása
             return true;
@@ -88,24 +87,5 @@ class NewPersonModel {
         return false;
       }
     }
-  }
-
-  Future<int> generateUniqueId() async {
-    List<PersonDataModel> persons = [];
-    final personDbHelper = PersonRepository();
-    persons = await personDbHelper.loadPersons();
-
-    // Keresd meg a legnagyobb id-t a persons listában
-    int? highestId = 0;
-    for (final person in persons) {
-      if (person.id! > highestId!) {
-        highestId = person.id;
-      }
-    }
-
-    // Az új id érték a legnagyobb id-hez + 1
-    int newId = highestId! + 1;
-
-    return newId;
   }
 }

@@ -40,7 +40,7 @@ class NewDebtDialogModel {
             try {
               final NewPersonModel _model = NewPersonModel();
               final result = await _model.insertPerson(
-                  name, "looool@gmail.com", false, context);
+                  name, "looool@gmail.com", false, context, 77);
 
               final newPerson2 = await getPersonByNameWeb(name);
 
