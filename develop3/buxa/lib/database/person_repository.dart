@@ -112,6 +112,27 @@ class PersonRepository {
   }
   //uuujjaaaaaaaak
 
+  Future<int?> getPersonIdByName(String name) async {
+    try {
+      final db = await this.database;
+      final maps = await db.query(
+        tableName,
+        columns: [columnId],
+        where: '$columnName = ?',
+        whereArgs: [name],
+      );
+
+      if (maps.isNotEmpty) {
+        return maps.first[columnId] as int?;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Hiba a getPersonIdByName függvényben: $e');
+      return null;
+    }
+  }
+
   Future<List<PersonDataModel>> loadPersons() async {
     try {
       if (!kIsWeb) {
@@ -135,12 +156,8 @@ class PersonRepository {
               (doc) async => PersonDataModel.fromMap(doc.data()),
             ));
             return peopleList;
-          } else {
-            //ErrorDialog.show(context, 'Nincsenek adatok a Firestore-ban.');
-          }
-        } else {
-          //ErrorDialog.show(context, 'Nem vagy bejelentkezve.');
-        }
+          } else {}
+        } else {}
       }
     } catch (e, stackTrace) {
       print('Hiba a loadPersons függvényben: $e');

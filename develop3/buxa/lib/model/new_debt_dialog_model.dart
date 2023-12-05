@@ -16,6 +16,7 @@ class NewDebtDialogModel {
       final NewPersonModel _model = NewPersonModel();
       final NewPersonViewModel viewmodel =
           NewPersonViewModel(onAddNewPerson: () {});
+      PersonRepository personRepository = new PersonRepository();
 
       if (kIsWeb) {
         final id = await viewmodel.generateUniqueId();
@@ -23,12 +24,10 @@ class NewDebtDialogModel {
         return id;
       } else {
         await _model.insertPerson(name, "pelda@gmail.com", false, context);
-        PersonRepository pr = new PersonRepository();
-        Future<PersonDataModel?> person = pr.getPersonByName(name);
-        return 0; //person.id;
+        Future<int?> personId = personRepository.getPersonIdByName(name);
+        return personId;
       }
     } catch (error) {
-      print('Hiba történt a Firestore-ba való beszúrás közben: $error');
       return 0;
     }
 
