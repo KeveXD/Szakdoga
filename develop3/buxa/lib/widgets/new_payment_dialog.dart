@@ -57,7 +57,9 @@ class _NewPaymentDialogState extends State<NewPaymentDialog> {
                       items: PaymentType.values.map((PaymentType value) {
                         return DropdownMenuItem<PaymentType>(
                           value: value,
-                          child: Text(value.toString().split('.').last),
+                          child: Text(
+                            value == PaymentType.Income ? 'Bevétel' : 'Kiadás',
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
