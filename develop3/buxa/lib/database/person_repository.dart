@@ -166,4 +166,42 @@ class PersonRepository {
 
     return [];
   }
+
+  Future<bool> doesPersonExist(String name) async {
+    try {
+      if (!kIsWeb) {
+        final db = await this.database;
+        final maps = await db.query(
+          tableName,
+          columns: [columnName],
+          where: '$columnName = ?',
+          whereArgs: [name],
+        );
+
+        return maps.isNotEmpty;
+      } else {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef
+              .where(columnName, isEqualTo: name)
+              .get();
+
+          return peopleQuerySnapshot.docs.isNotEmpty;
+        }
+      }
+    } catch (e) {
+      print('Hiba a doesPersonExist függvényben: $e');
+      return false;
+    }
+
+    return false;
+  }
 }

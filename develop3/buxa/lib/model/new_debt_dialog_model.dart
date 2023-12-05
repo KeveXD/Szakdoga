@@ -17,15 +17,21 @@ class NewDebtDialogModel {
       final NewPersonViewModel viewmodel =
           NewPersonViewModel(onAddNewPerson: () {});
       PersonRepository personRepository = new PersonRepository();
+      final need = await personRepository.doesPersonExist(name);
 
       if (kIsWeb) {
         final id = await viewmodel.generateUniqueId();
         viewmodel.addNewPersonToFirebase(context, name, id);
         return id;
       } else {
-        await _model.insertPerson(name, "pelda@gmail.com", false, context);
-        Future<int?> personId = personRepository.getPersonIdByName(name);
-        return personId;
+        if (!need) {
+          await _model.insertPerson(name, "pelda@gmail.com", false, context);
+          Future<int?> personId = personRepository.getPersonIdByName(name);
+          return personId;
+        } else {
+          final personId = await personRepository.getPersonIdByName(name);
+          return personId;
+        }
       }
     } catch (error) {
       return 0;

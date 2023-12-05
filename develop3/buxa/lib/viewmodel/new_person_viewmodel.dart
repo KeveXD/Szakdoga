@@ -21,12 +21,19 @@ class NewPersonViewModel {
     final name = nameController.text;
     final email = emailController.text;
     final id = await generateUniqueId();
-    final result = addNewPersonToFirebase(context, name, id);
-    // await _model.insertPerson(name, email, hasRevolut, context, id);
-
-    if (result != null) {
-      onAddNewPerson();
+    if (kIsWeb) {
+      final result = addNewPersonToFirebase(context, name, id);
+      if (result != null) {
+        onAddNewPerson();
+      }
+    } else {
+      final result =
+          await _model.insertPerson(name, email, hasRevolut, context);
+      if (result != null) {
+        onAddNewPerson();
+      }
     }
+    // await _model.insertPerson(name, email, hasRevolut, context, id);
   }
 
   Future<int> generateUniqueId() async {
@@ -45,7 +52,6 @@ class NewPersonViewModel {
     // Az új id érték a legnagyobb id-hez + 1
     int newId = highestId + 1;
 
-    print(newId);
     return newId;
   }
 
