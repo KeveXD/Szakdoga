@@ -145,8 +145,7 @@ class PersonRepository {
 
           if (peopleQuerySnapshot.docs.isNotEmpty) {
             final personData = peopleQuerySnapshot.docs.first.data();
-            print("loool");
-            print(personData[columnId] as int?);
+
             return personData[columnId] as int?;
           } else {
             return null;

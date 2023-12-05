@@ -125,7 +125,7 @@ class DebtDetailsModel {
             : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
         final personTo = kIsWeb
             ? await getPersonByNameWeb(debtorWithSmallestDebt)
-            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+            : await personDbHelper!.getPersonByName(debtorWithSmallestDebt);
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
@@ -144,9 +144,10 @@ class DebtDetailsModel {
         final debtorPerson = kIsWeb
             ? await getPersonByNameWeb(debtorWithLargestDebt)
             : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+
         final personTo = kIsWeb
             ? await getPersonByNameWeb(debtorWithSmallestDebt)
-            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+            : await personDbHelper!.getPersonByName(debtorWithSmallestDebt);
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
