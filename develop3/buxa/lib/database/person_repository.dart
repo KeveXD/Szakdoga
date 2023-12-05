@@ -114,18 +114,44 @@ class PersonRepository {
 
   Future<int?> getPersonIdByName(String name) async {
     try {
-      final db = await this.database;
-      final maps = await db.query(
-        tableName,
-        columns: [columnId],
-        where: '$columnName = ?',
-        whereArgs: [name],
-      );
+      if (!kIsWeb) {
+        final db = await this.database;
+        final maps = await db.query(
+          tableName,
+          columns: [columnId],
+          where: '$columnName = ?',
+          whereArgs: [name],
+        );
 
-      if (maps.isNotEmpty) {
-        return maps.first[columnId] as int?;
+        if (maps.isNotEmpty) {
+          return maps.first[columnId] as int?;
+        } else {
+          return null;
+        }
       } else {
-        return null;
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef
+              .where(columnName, isEqualTo: name)
+              .get();
+
+          if (peopleQuerySnapshot.docs.isNotEmpty) {
+            final personData = peopleQuerySnapshot.docs.first.data();
+            print("loool");
+            print(personData[columnId] as int?);
+            return personData[columnId] as int?;
+          } else {
+            return null;
+          }
+        }
       }
     } catch (e) {
       print('Hiba a getPersonIdByName függvényben: $e');

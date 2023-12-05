@@ -20,9 +20,14 @@ class NewDebtDialogModel {
       final need = await personRepository.doesPersonExist(name);
 
       if (kIsWeb) {
-        final id = await viewmodel.generateUniqueId();
-        viewmodel.addNewPersonToFirebase(context, name, id);
-        return id;
+        if (!need) {
+          final id = await viewmodel.generateUniqueId();
+          viewmodel.addNewPersonToFirebase(context, name, id);
+          return id;
+        } else {
+          final personId = await personRepository.getPersonIdByName(name);
+          return personId;
+        }
       } else {
         if (!need) {
           await _model.insertPerson(name, "pelda@gmail.com", false, context);
