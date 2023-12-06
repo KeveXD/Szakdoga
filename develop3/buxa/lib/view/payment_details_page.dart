@@ -107,14 +107,14 @@ class PaymentDetailsPage extends StatelessWidget {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             // A keresés folyamatban van
-                            return Text('Loading...');
+                            return Text('töltés...');
                           } else if (snapshot.hasError) {
                             // Hiba történt
                             return Text('Error: ${snapshot.error}');
                           } else {
                             // Sikeres keresés esetén az eredmény megjelenítése
                             return Text(
-                              snapshot.data ?? 'No Pocket Found',
+                              snapshot.data ?? 'Nem található zseb',
                               style: TextStyle(fontSize: 16),
                             );
                           }

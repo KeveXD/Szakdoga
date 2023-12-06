@@ -30,7 +30,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
   late TextEditingController commentController;
   late TextEditingController pocketNameController;
 
-  String selectedCurrency = 'USD';
+  String selectedCurrency = 'HUF';
   PaymentType selectedPaymentType = PaymentType.Income;
   bool isDebt = false;
 
@@ -46,7 +46,6 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
         TextEditingController(text: widget.initialPayment.comment);
     PaymentDetailsPageViewModel vm =
         PaymentDetailsPageViewModel(payment: widget.initialPayment);
-    //String pName = await vm.getPocketNameById(widget.initialPayment.id ?? -1);
     pocketNameController = TextEditingController(text: "");
     selectedCurrency = widget.initialPayment.currency;
     selectedPaymentType = widget.initialPayment.type;
@@ -91,7 +90,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Payment'),
+        title: Text('Fizetés szerkesztése'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -99,7 +98,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              'Title',
+              'Cím',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -109,13 +108,13 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
               controller: titleController,
               style: TextStyle(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Enter title',
+                hintText: 'add meg a címet',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             Text(
-              'Comment',
+              'Megjegyzés',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -125,13 +124,13 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
               controller: commentController,
               style: TextStyle(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Enter comment',
+                hintText: 'Add meg a megjegyzést',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             Text(
-              'Payment Type',
+              'típus',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -164,14 +163,14 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
                   },
                 ),
                 Text(
-                  'Is Debt',
+                  'Tartozás-e',
                   style: TextStyle(fontSize: 16),
                 ),
               ],
             ),
             SizedBox(height: 16),
             Text(
-              'Pocket Name',
+              'Zseb név',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -181,13 +180,13 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
               controller: pocketNameController,
               style: TextStyle(fontSize: 16),
               decoration: InputDecoration(
-                hintText: 'Enter pocket name',
+                hintText: 'Add meg a zseb nevét',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             Text(
-              'Amount',
+              'Összeg',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -198,13 +197,13 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
               style: TextStyle(fontSize: 16),
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                hintText: 'Enter amount',
+                hintText: 'Add meg az összeget',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 16),
             Text(
-              'Currency',
+              'Valuta',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -228,7 +227,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
             ),
             SizedBox(height: 16),
             Text(
-              'Date',
+              'Dátum',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -243,7 +242,7 @@ class _EditPaymentPageState extends State<EditPaymentPage> {
                   controller: dateController,
                   style: TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    hintText: 'Select date',
+                    hintText: 'Válassz dátumot',
                     border: OutlineInputBorder(),
                   ),
                 ),
