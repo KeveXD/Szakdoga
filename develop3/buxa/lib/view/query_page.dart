@@ -166,7 +166,7 @@ class _QueryPageState extends State<QueryPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Válassz költés vagy kiadás:'),
+                          Text('Válassz bevétel vagy kiadás:'),
                           Row(
                             children: [
                               _queryService.buildToggleButton(
@@ -179,7 +179,7 @@ class _QueryPageState extends State<QueryPage> {
                                 },
                               ),
                               _queryService.buildToggleButton(
-                                text: 'Kiadás',
+                                text: 'Bevétel',
                                 isSelected: _isIncomeSelected,
                                 onToggle: (selected) {
                                   setState(() {

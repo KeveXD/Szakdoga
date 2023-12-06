@@ -17,8 +17,7 @@ class NewPocketViewModel {
       ErrorDialog.show(context, 'A nevet kötelező megadni');
     } else {
       final id = await generateUniqueId();
-      print("hee");
-      print(id);
+
       await model.insertPocket(name, id);
 
       onAddNewPocket();
