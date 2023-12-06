@@ -1,0 +1,32 @@
+1 Bevezetés
+1.1 Motiváció
+1.2 A dolgozat felépítése
+2 Felhasznált technológiák
+2.1 Firebase Authentication
+2.2 Firebase Firestore Database
+2.3 SQLite
+2.4 GitHub
+2.5 Visual Studio Code
+2.6 Flutter
+2.7 Android Studio emulátor
+3 Tervezés
+3.1 Ötlet
+3.2 Előzmény
+3.3 Feladat specifikációja
+3.3.1 Legfontosabb funkciók
+3.3.2 Use Case diagram
+3.4 A program architektúrája
+3.5 Mit lehet még fejleszteni
+4 A feladat megoldása
+4.1 A program logikai felépítése
+4.1.1 Adatbáziskezelés
+4.2 A projekt megvalósításának folyamata
+4.2.1 verziókezelés
+4.3 A program tesztelése
+4.3.1 Manuális tesztelés
+4.4 A program használata
+5 Végeredmény
+5.1 Értékelés
+--5.2 Továbbfejlesztési lehetőségek
+6 Köszönetnyilvánítás
+7 Irodalomjegyzék
