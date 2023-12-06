@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:buxa/data_model/pocket_data_model.dart';
@@ -131,5 +134,41 @@ class PocketRepository {
     } else {
       return [];
     }
+  }
+
+  //ujak webes függvények
+
+  Future<List<PocketDataModel>> loadPersons() async {
+    try {
+      if (!kIsWeb) {
+        final pocketList = await getPocketList();
+        return pocketList.whereType<PocketDataModel>().toList();
+      } else {
+        List<PocketDataModel> pocketList = [];
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('Pockets');
+
+          final pocketQuerySnapshot = await peopleCollectionRef.get();
+          if (pocketQuerySnapshot.docs.isNotEmpty) {
+            pocketList = await Future.wait(pocketQuerySnapshot.docs.map(
+              (doc) async => PocketDataModel.fromMap(doc.data()),
+            ));
+            return pocketList;
+          } else {}
+        } else {}
+      }
+    } catch (e, stackTrace) {
+      print('Hiba a loadPockets függvényben: $e');
+      print(stackTrace);
+    }
+
+    return [];
   }
 }

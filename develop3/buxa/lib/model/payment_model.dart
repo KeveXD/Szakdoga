@@ -37,9 +37,7 @@ class PaymentModel {
         }
       } catch (error) {
         ErrorDialog.show(context, 'Hiba történt: $error');
-      } finally {
-        //Navigator.of(context).pop(); // Töltő ikon eltávolítása
-      }
+      } finally {}
     } else {
       final repository = PaymentRepository();
       paymentsList = await repository.getPaymentList();
@@ -50,10 +48,6 @@ class PaymentModel {
       paymentsList = paymentsList
           .where((payment) => payment.pocketId == pocket.id)
           .toList();
-    }
-
-    if (paymentsList.isEmpty) {
-      // ErrorDialog.show(context, 'Nincsenek adatok a helyi adatbázisban.');
     }
 
     return paymentsList;
