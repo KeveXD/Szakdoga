@@ -117,7 +117,7 @@ class _PersonPageState extends State<PersonPage> {
                       return NewPersonDialog(
                         onAddNewPerson: () {
                           _refreshPeople();
-                          //Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                       );
                     },

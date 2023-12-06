@@ -16,7 +16,7 @@ Future<void> main() async {
             messagingSenderId: "875595350767",
             appId: "1:875595350767:web:6bc86c822c1625a209d11a"));
   }
-  //androidhoz is kell egy hasonló
+  //androidhoz is kell egy ilyesmi
   await Firebase.initializeApp();
 
   runApp(MaterialApp(

@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:buxa/data_model/person_data_model.dart';
@@ -106,5 +109,124 @@ class PersonRepository {
     } else {
       return null;
     }
+  }
+  //uuujjaaaaaaaak
+
+  Future<int?> getPersonIdByName(String name) async {
+    try {
+      if (!kIsWeb) {
+        final db = await this.database;
+        final maps = await db.query(
+          tableName,
+          columns: [columnId],
+          where: '$columnName = ?',
+          whereArgs: [name],
+        );
+
+        if (maps.isNotEmpty) {
+          return maps.first[columnId] as int?;
+        } else {
+          return null;
+        }
+      } else {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef
+              .where(columnName, isEqualTo: name)
+              .get();
+
+          if (peopleQuerySnapshot.docs.isNotEmpty) {
+            final personData = peopleQuerySnapshot.docs.first.data();
+
+            return personData[columnId] as int?;
+          } else {
+            return null;
+          }
+        }
+      }
+    } catch (e) {
+      print('Hiba a getPersonIdByName függvényben: $e');
+      return null;
+    }
+  }
+
+  Future<List<PersonDataModel>> loadPersons() async {
+    try {
+      if (!kIsWeb) {
+        final personList = await getPersonList();
+        return personList.whereType<PersonDataModel>().toList();
+      } else {
+        List<PersonDataModel> peopleList = [];
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef.get();
+          if (peopleQuerySnapshot.docs.isNotEmpty) {
+            peopleList = await Future.wait(peopleQuerySnapshot.docs.map(
+              (doc) async => PersonDataModel.fromMap(doc.data()),
+            ));
+            return peopleList;
+          } else {}
+        } else {}
+      }
+    } catch (e, stackTrace) {
+      print('Hiba a loadPersons függvényben: $e');
+      print(stackTrace);
+    }
+
+    return [];
+  }
+
+  Future<bool> doesPersonExist(String name) async {
+    try {
+      if (!kIsWeb) {
+        final db = await this.database;
+        final maps = await db.query(
+          tableName,
+          columns: [columnName],
+          where: '$columnName = ?',
+          whereArgs: [name],
+        );
+
+        return maps.isNotEmpty;
+      } else {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final firestore = FirebaseFirestore.instance;
+          final userEmail = user.email;
+
+          final peopleCollectionRef = firestore
+              .collection(userEmail!)
+              .doc('userData')
+              .collection('People');
+
+          final peopleQuerySnapshot = await peopleCollectionRef
+              .where(columnName, isEqualTo: name)
+              .get();
+
+          return peopleQuerySnapshot.docs.isNotEmpty;
+        }
+      }
+    } catch (e) {
+      print('Hiba a doesPersonExist függvényben: $e');
+      return false;
+    }
+
+    return false;
   }
 }

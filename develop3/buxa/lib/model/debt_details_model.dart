@@ -42,6 +42,7 @@ class DebtDetailsModel {
       }
     } else {
       // Mobil platformon használjuk a DebtRepository-t
+
       final debtDbHelper = DebtRepository();
       allDebts = await debtDbHelper.getDebtList();
     }
@@ -95,13 +96,11 @@ class DebtDetailsModel {
       }
     });
 
-    int a = 0;
     while (debtsMap.values.any((value) => value != 0)) {
       debtorWithSmallestDebt = '';
       debtorWithLargestDebt = '';
       smallestDebt = 0;
       largestDebt = 0;
-      a++;
 
       debtsMap.forEach((debtor, amount) {
         if (amount > largestDebt) {
@@ -121,10 +120,12 @@ class DebtDetailsModel {
         debtsMap[debtorWithLargestDebt] =
             (debtsMap[debtorWithLargestDebt] ?? 0) - largestDebt;
 
-        final debtorPerson =
-            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
-        final personTo =
-            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
+        final debtorPerson = kIsWeb
+            ? await getPersonByNameWeb(debtorWithLargestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+        final personTo = kIsWeb
+            ? await getPersonByNameWeb(debtorWithSmallestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithSmallestDebt);
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
@@ -140,10 +141,13 @@ class DebtDetailsModel {
         debtsMap[debtorWithSmallestDebt] =
             (debtsMap[debtorWithSmallestDebt] ?? 0) - smallestDebt;
 
-        final debtorPerson =
-            kIsWeb ? await getPersonByNameWeb(debtorWithLargestDebt) : null;
-        final personTo =
-            kIsWeb ? await getPersonByNameWeb(debtorWithSmallestDebt) : null;
+        final debtorPerson = kIsWeb
+            ? await getPersonByNameWeb(debtorWithLargestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithLargestDebt);
+
+        final personTo = kIsWeb
+            ? await getPersonByNameWeb(debtorWithSmallestDebt)
+            : await personDbHelper!.getPersonByName(debtorWithSmallestDebt);
 
         if (debtorPerson != null && personTo != null) {
           resultDebts.add(DebtDataModel(
