@@ -79,6 +79,7 @@ class DebtDetailsModel {
       }
     }
 
+    //inicializálom a változókat
     String debtorWithSmallestDebt = '';
     String debtorWithLargestDebt = '';
     int smallestDebt = 0;
