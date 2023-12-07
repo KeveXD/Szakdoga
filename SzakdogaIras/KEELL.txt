@@ -3,3 +3,7 @@ tovabbfejlesztesi lehetosegek uj helyen tartalom atiras es a felepites atiras
 wallet
 
 ötlet elozmeny kuka
+
+-tartalom
+-a dolgozat felépítése kereszthivatkozásokkal
+-
