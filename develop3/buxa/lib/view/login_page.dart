@@ -15,8 +15,8 @@ class LoginPage extends StatelessWidget {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     //csak probabol kell teszteleshez konnyebb
-    emailController.text = 'proba@gmail.com';
-    passwordController.text = 'Proba123';
+    //emailController.text = 'proba@gmail.com';
+    //passwordController.text = 'Proba123';
 
     return Scaffold(
       appBar: AppBar(
