@@ -88,7 +88,7 @@ class MenuPage extends StatelessWidget {
                   ],
                 ),
               ),
-              if (!isWeb) // Csak akkor jelenjenek meg a gombok, ha nem weben fut az alkalmazás
+              if (!isWeb)
                 Container(
                   color: Color(0xFF232B59),
                   padding: EdgeInsets.all(10),
